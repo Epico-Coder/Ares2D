@@ -8,6 +8,11 @@
 #include "engine/rendering/Window.h"
 #include "engine/rendering/Renderer.h"
 
+#include "engine/rendering/storage/VertexBuffer.h"
+#include "engine/rendering/storage/VertexBufferLayout.h"
+#include "engine/rendering/storage/VertexArray.h"
+#include "engine/rendering/storage/IndexBuffer.h"
+
 #include "engine/resources/shaders/Shader.h"
 
 #define ASSERT(x) if (!(x)) __debugbreak();
@@ -17,7 +22,8 @@
 
 namespace Ares2D
 {
-    unsigned int Init();
+    unsigned int GLFWInit();
+    unsigned int GLEWInit();
     
     const GLubyte* GetVersion();
 

@@ -1,8 +1,16 @@
 #include "Ares2D.h"
 
-unsigned int Ares2D::Init()
+unsigned int Ares2D::GLFWInit()
 {
-	if ((glfwInit() != GLFW_TRUE) || (glewInit() != GLEW_OK))
+	if (glfwInit() != GLFW_TRUE)
+		return ARES_FALSE;
+	else
+		return ARES_TRUE;
+}
+
+unsigned int Ares2D::GLEWInit()
+{
+	if (glewInit() != GLEW_OK)
 		return ARES_FALSE;
 	else
 		return ARES_TRUE;

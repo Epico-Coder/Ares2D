@@ -12,7 +12,7 @@ public:
 	void MakeContextCurrent();
 	bool WindowOpen();
 
-	void Clear(GLfloat r = 0, GLfloat g = 0, GLfloat b = 0, GLfloat a = 0);
+	void Clear(GLfloat r = 0.0f, GLfloat g = 0.0f, GLfloat b = 0.0f, GLfloat a = 0.0);
 
 	void SwapBuffers();
 	void PollEvents();

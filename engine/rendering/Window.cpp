@@ -8,7 +8,7 @@ Window::Window(int width, int height, const char* title, bool vSync)
         glfwTerminate();
 
     glfwMakeContextCurrent(m_Window);
-    glfwSwapInterval(vSync);
+    glfwSwapInterval(1);
 }
 
 void Window::MakeContextCurrent()
@@ -21,11 +21,12 @@ bool Window::WindowOpen()
     return !glfwWindowShouldClose(m_Window);
 }
 
-void Window::Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+void Window::Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a) 
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
     glClearColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
+
 
 void Window::SwapBuffers()
 {
