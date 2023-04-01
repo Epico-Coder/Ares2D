@@ -13,6 +13,11 @@
 #include "engine/rendering/storage/VertexArray.h"
 #include "engine/rendering/storage/IndexBuffer.h"
 
+#include "engine/rendering/geometry/Triangle.h"
+#include "engine/rendering/geometry/Rect.h"
+#include "engine/rendering/geometry/Circle.h"
+#include "engine/rendering/geometry/Polygon.h"
+
 #include "engine/resources/shaders/Shader.h"
 
 #define ASSERT(x) if (!(x)) __debugbreak();

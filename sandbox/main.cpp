@@ -2,6 +2,9 @@
 
 #include "engine/Ares2D.h"
 
+#include "dependancies/glm/glm.hpp"
+#include "dependancies/glm/gtc/matrix_transform.hpp"
+
 int main()
 {
     Ares2D::GLFWInit();
@@ -13,6 +16,8 @@ int main()
 
     // Print OpenGL Version
     std::cout << Ares2D::GetVersion() << std::endl;
+
+    Renderer renderer;
 
     // List of Positions to be stored in vertex buffer
     float vertices[] = {
@@ -26,18 +31,16 @@ int main()
         0, 1, 2,    
     };
 
-    // -> Rect rect(Entps, Color, Texture);
-    // -> rect.Draw();
+    // Adding Entities into renderer
+    TrianglePS trips{ -0.5f, -0.5f, 0.5f, -0.5f, 0.0f, 0.5f };
+    Color clr{ 1.0f, 0.8f, 0.2f, 1.0f };
+    Triangle tri(trips, clr, 1.0f);
 
-    VertexBuffer vb(vertices, 3 * 2 * sizeof(float));
-
-    VertexBufferLayout vbl;
-    vbl.Push<GLfloat>(2);
-
-    VertexArray vao;
-    vao.AddBuffer(vb, vbl);
-
-    IndexBuffer ib(indices, 3);
+    renderer.AddTriangle("triangle 1", tri);
+    
+    // iterator, acceleration
+    float i = 0.0f;
+    float a = 0.01f;
 
     // Main Loop
     while (win.WindowOpen())
@@ -46,16 +49,27 @@ int main()
         
         // Update Logic
 
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(i, 0, 0));
+        glm::vec4 new_vert1 = view * glm::vec4(-0.5f, -0.5f, 1.0f, 1.0f);
+        glm::vec4 new_vert2 = view * glm::vec4(0.5f, -0.5f, 1.0f, 1.0f);
+        glm::vec4 new_vert3 = view * glm::vec4(0.0f, 0.5f, 1.0f, 1.0f);
+        TrianglePS trips{ new_vert1.x, new_vert1.y, new_vert2.x, new_vert2.y, new_vert3.x, new_vert3.y };
+        Triangle tri(trips, clr, 1.0f);
+
+        renderer.UpdateTriangle("triangle 1", tri);
 
         // Update ReDraw
 
-        vao.Bind();
-        glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+        renderer.Draw();
 
         // Swap back and front buffers
         win.SwapBuffers();
         // OS and User events
         win.PollEvents();
+
+        if (i >= 0.5f || i <= -0.5f)
+            a *= -1;
+        i += a;
     }
 
     // Terminate after loop over
