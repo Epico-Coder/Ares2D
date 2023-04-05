@@ -1,11 +1,14 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(const void* data, unsigned int count)
+IndexBuffer::IndexBuffer(const void* data, unsigned int count, bool dynamic)
 {
     m_count = count;
     glGenBuffers(1, &m_buffer);
     Bind();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), data, GL_STATIC_DRAW);
+    if (dynamic)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
+    else
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), data, GL_STATIC_DRAW);
 }
 
 IndexBuffer::~IndexBuffer()
@@ -21,6 +24,11 @@ void IndexBuffer::Bind() const
 void IndexBuffer::Unbind() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void IndexBuffer::Update(const void* data, unsigned int count)
+{
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(GLuint), data);
 }
 
 unsigned int IndexBuffer::GetCount() const

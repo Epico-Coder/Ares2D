@@ -20,10 +20,16 @@
 
 #include "engine/resources/shaders/Shader.h"
 
+#include "engine/utils/input/Input.h"
+
 #define ASSERT(x) if (!(x)) __debugbreak();
 
 #define ARES_TRUE 1
 #define ARES_FALSE 0
+
+
+#define ARES_KEY_LEFT GLFW_KEY_LEFT
+
 
 namespace Ares2D
 {

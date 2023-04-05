@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
-
 #include "dependancies/glew/include/GL/glew.h"
-#include "engine/utils/color/Color.h"
+#include "engine/rendering/geometry/Geometry.h"
 
 struct TrianglePS
 {
@@ -17,19 +15,18 @@ struct TrianglePS
 	float y3;
 };
 
-class Triangle
+class Triangle : public Geometry
 {
+	friend class Renderer;
+
 public:
-	Triangle(TrianglePS triangle_ps, Color color, float texID);
+	Triangle(Vertex v1, Vertex v2, Vertex v3, unsigned int triNo = 0);
 	~Triangle();
 
 	void SetColor(Color color);
+
 	void SetGradient(Color v1, Color v2, Color v3);
-public:
-	std::vector<float> getPosition();
-	std::vector<unsigned int> getIndices();
-protected:
-	std::vector<float> m_position;
-	std::vector<unsigned int> m_indices;
+
+	void Translate(float x, float y);
 };
 
