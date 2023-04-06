@@ -1,6 +1,6 @@
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(const void* data, unsigned int size, bool dynamic)
+VertexBuffer::VertexBuffer(const void* data, size_t size, bool dynamic)
 {
     glCreateBuffers(1, &m_buffer);
     glGenBuffers(1, &m_buffer);
@@ -21,7 +21,7 @@ void VertexBuffer::Bind() const
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 }
 
-void VertexBuffer::Update(const void* data, unsigned int size)
+void VertexBuffer::Update(const void* data, size_t size)
 {
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }

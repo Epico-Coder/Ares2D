@@ -22,19 +22,23 @@ int main()
 
     Triangle tri1(Vertex{ 040.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f },
                   Vertex{ 240.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f },
-                  Vertex{ 140.0f, 460.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f }, 0);
+                  Vertex{ 140.0f, 460.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f });
 
     Triangle tri2(Vertex{ 340.0f, 260.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
                   Vertex{ 540.0f, 260.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f },
-                  Vertex{ 440.0f, 460.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f }, 1);
+                  Vertex{ 440.0f, 460.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f });
 
-    Triangle tri3(Vertex{ 640.0f, 260.0f, 1.0f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-                  Vertex{ 840.0f, 260.0f, 0.0f, 1.0f, 0.8f, 1.0f, 1.0f, 0.0f, 0.0f },
-                  Vertex{ 740.0f, 460.0f, 0.8f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f }, 2);
+    Rect rect1(Vertex{ 640.0f, 260.0f, 1.0f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f }, 100.0f, 250.0f);
 
-    renderer.AddTriangle("triangle1", tri1);
-    renderer.AddTriangle("triangle2", tri2);
-    renderer.AddTriangle("triangle3", tri3);
+    Rect rect2(Vertex{ 640.0f, 260.0f, 1.0f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+               Vertex{ 940.0f, 260.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+               Vertex{ 940.0f, 360.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f },
+               Vertex{ 640.0f, 360.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f });
+
+    renderer.AddGeometry<Triangle>(&tri1);
+    renderer.AddGeometry<Rect>(&rect1);
+    renderer.AddGeometry<Triangle>(&tri2);
+    renderer.AddGeometry<Rect>(&rect2);
 
     Shader shader;
     shader.AddVertexShader();
@@ -44,7 +48,7 @@ int main()
 
     KeyInput ki(win.getWindow());
 
-    std::vector<Triangle*> iterable_objs = { &tri1, &tri2, &tri3 };
+    std::vector<Geometry*> iterable_objs = { &tri1, &tri2, &rect1, &rect2 };
     unsigned int active_obj = 0;
 
     // Main Loop
@@ -63,10 +67,19 @@ int main()
             else
                 active_obj++;
         }
+
+        if (ki.getIsKeyDown(GLFW_KEY_1))
+            active_obj = 0;
+        if (ki.getIsKeyDown(GLFW_KEY_2))
+            active_obj = 1;
+        if (ki.getIsKeyDown(GLFW_KEY_3))
+            active_obj = 2;
+        if (ki.getIsKeyDown(GLFW_KEY_4))
+            active_obj = 3;
+
         // -> Key mapping to functions
-        if (ki.getIsKeyDown(GLFW_KEY_LEFT)) {
+        if (ki.getIsKeyDown(GLFW_KEY_LEFT))
             (iterable_objs[active_obj])->Translate(-5.0f, 0.0f);
-        }
         if (ki.getIsKeyDown(GLFW_KEY_RIGHT))
             iterable_objs[active_obj]->Translate(5.0f, 0.0f);
         if (ki.getIsKeyDown(GLFW_KEY_UP))
@@ -74,9 +87,6 @@ int main()
         if (ki.getIsKeyDown(GLFW_KEY_DOWN))
             iterable_objs[active_obj]->Translate(0.0f, -5.0f);
 
-        // -> Merge UpdateShape and Update into one
-        renderer.UpdateTriangle(std::string("triangle").append(std::to_string(active_obj+1)), *(iterable_objs[active_obj]));
-        
         // Update Logic
         renderer.Update();
 

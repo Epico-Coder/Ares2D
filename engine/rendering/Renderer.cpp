@@ -1,6 +1,7 @@
 #include "Renderer.h"
 
 #include <iostream>
+#include <algorithm>
 
 Renderer::Renderer()
 {
@@ -10,6 +11,7 @@ Renderer::Renderer()
 	m_vbl.Push<GLfloat>(2);
 	m_vbl.Push<GLfloat>(1);
 
+	m_vao.AddBuffer(m_vbo, m_vbl);
 	m_vao.Bind();
 }
 
@@ -22,22 +24,46 @@ void Renderer::DrawTestTriangle(float x, float y, float size) const
 	glEnd();
 }
 
-void Renderer::AddTriangle(const char* id, Triangle& triangle)
+template<>
+void Renderer::AddGeometry<Triangle>(Geometry* geometry, const char* id)
 {
-	m_Entities.push_back(EntityStruct{ id, triangle.m_vertices, triangle.m_indices });
-}
-
-void Renderer::UpdateTriangle(std::string id, Triangle& triangle)
-{
-	for (int i = 0; i < m_Entities.size(); i++)
+	if (!m_indices.empty())
 	{
-		if (m_Entities[i].m_id == id)
+		for (int i = 0; i < geometry->m_indices.size(); i++)
 		{
-			m_Entities.erase(m_Entities.begin()+i);
-			m_Entities.push_back(EntityStruct{ id, triangle.m_vertices, triangle.m_indices });
-			break;
+			geometry->m_indices[i] += *std::max_element(m_indices.begin(), m_indices.end()) + 1;
 		}
 	}
+
+	m_Geometries.push_back(geometry);
+
+	m_vertices.insert(m_vertices.end(), geometry->m_vertices.begin(), geometry->m_vertices.end());
+	m_indices.insert(m_indices.end(), geometry->m_indices.begin(), geometry->m_indices.end());
+
+	m_vbo.Update(m_vertices.data(), m_vertices.size() * sizeof(GLfloat));
+
+	m_triangles_no += 1;
+}
+
+template<>
+void Renderer::AddGeometry<Rect>(Geometry* geometry, const char* id)
+{
+	if (!m_indices.empty())
+	{
+		for (int i = 0; i < geometry->m_indices.size(); i++)
+		{
+			geometry->m_indices[i] += *std::max_element(m_indices.begin(), m_indices.end()) + 1;
+		}
+	}
+
+	m_Geometries.push_back(geometry);
+
+	m_vertices.insert(m_vertices.end(), geometry->m_vertices.begin(), geometry->m_vertices.end());
+	m_indices.insert(m_indices.end(), geometry->m_indices.begin(), geometry->m_indices.end());
+
+	m_vbo.Update(m_vertices.data(), m_vertices.size() * sizeof(GLfloat));
+
+	m_rect_no += 1;
 }
 
 void Renderer::Update()
@@ -45,21 +71,21 @@ void Renderer::Update()
 	m_vertices.clear();
 	m_indices.clear();
 
-	for (EntityStruct entity : m_Entities)
+	for (Geometry* geometry : m_Geometries)
 	{
-		m_vertices.insert(m_vertices.end(), entity.m_vertexVec.begin(), entity.m_vertexVec.end());
-		m_indices.insert(m_indices.end(), entity.m_indexVec.begin(), entity.m_indexVec.end());
+		m_vertices.insert(m_vertices.end(), geometry->m_vertices.begin(), geometry->m_vertices.end());
+		m_indices.insert(m_indices.end(), geometry->m_indices.begin(), geometry->m_indices.end());
 	}
 
 	m_vbo.Update(m_vertices.data(), m_vertices.size() * sizeof(GLfloat));
-	//m_ibo.Update(m_indices.data(), m_indices.size());
-	m_vao.AddBuffer(m_vbo, m_vbl);
+	m_vbo.Bind();
 }
 
 void Renderer::Draw()
 {
 	// Temporary buffer, killed out of scope
-	IndexBuffer temp_ibo = IndexBuffer(m_indices.data(), m_indices.size(), 0);
+	// -> make member buffer
+	IndexBuffer temp_ibo = IndexBuffer(m_indices.data(), unsigned int(m_indices.size()), 0);
 	
 	m_vao.Bind();
 	glDrawElements(GL_TRIANGLES, temp_ibo.GetCount(), GL_UNSIGNED_INT, nullptr);

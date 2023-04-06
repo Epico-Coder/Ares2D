@@ -15,16 +15,15 @@ struct Vertex
 
 class Geometry
 {
+	friend class Renderer;
+
 public:
-	Geometry() {};
-	~Geometry() {};
+	virtual void SetColor(Color color) {}
+	virtual void SetGradient(Color color) {}
 
-	//virtual void SetColor(Color color);
-	//virtual void SetGradient(Color color[]);
-
-	//virtual void Translate(float x, float y);
-	//virtual void Scale(float x, float y);
-	//virtual void Rotate(float angle);
+	virtual void Translate(float x, float y) {}
+	virtual void Scale(float x, float y) {}
+	virtual void Rotate(float angle) {}
 protected:
 	std::vector<float> m_vertices;
 	std::vector<unsigned int> m_indices;

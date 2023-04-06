@@ -37,15 +37,28 @@ public:
 	~Renderer();
 
 	void DrawTestTriangle(float x, float y, float size) const;
-	void AddTriangle(const char* id, Triangle& triangle);
-	void UpdateTriangle(std::string id, Triangle& triangle);
+
+	template <typename T>
+	void AddGeometry(Geometry* geometry, const char* id = nullptr) {}
+	template<>
+	void AddGeometry<Triangle>(Geometry* geometry, const char* id);
+	template<>
+	void AddGeometry<Rect>(Geometry* geometry, const char* id);
 
 	void Update();
-	void Draw();
 
+	void Draw();
+	
 private:
 	std::vector<EntityStruct> m_Entities;
 
+	std::vector<Geometry*> m_Geometries;
+public:
+	unsigned int m_triangles_no = 0;
+	unsigned int m_rect_no = 0;
+	unsigned int m_circle_no = 0;
+	unsigned int m_polygon_no = 0;
+private:
 	// Contains positions and corresponding indices of every object on screen
 	std::vector<float> m_vertices;
 	std::vector<unsigned int> m_indices;
