@@ -1,14 +1,20 @@
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(const void* data, size_t size, bool dynamic)
+#include <iostream>
+#include <memory>
+
+VertexBuffer::VertexBuffer(const void* data, size_t size)
 {
     glCreateBuffers(1, &m_buffer);
     glGenBuffers(1, &m_buffer);
     Bind();
-    if (dynamic)
-        glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
-    else
-        glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+}
+VertexBuffer::VertexBuffer()
+{
+    glCreateBuffers(1, &m_buffer);
+    glGenBuffers(1, &m_buffer);
+    Bind();
 }
 
 VertexBuffer::~VertexBuffer()
@@ -21,9 +27,14 @@ void VertexBuffer::Bind() const
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 }
 
-void VertexBuffer::Update(const void* data, size_t size)
+void VertexBuffer::SetSize(unsigned int max_size)
 {
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+    glBufferData(GL_ARRAY_BUFFER, max_size, nullptr, GL_DYNAMIC_DRAW);
+}
+
+void VertexBuffer::Update(const void* data, unsigned int size)
+{
+    glNamedBufferSubData(m_buffer, 0, size, data);
 }
 
 void VertexBuffer::Unbind() const

@@ -19,53 +19,67 @@
 #include "engine/rendering/geometry/Circle.h"
 #include "engine/rendering/geometry/Polygon.h"
 
-
-struct EntityStruct
-{
-	std::string m_id;
-	std::vector<float> m_vertexVec;
-	std::vector<unsigned int> m_indexVec;
-
-	void set_vertex(std::vector<float> vertex) { m_vertexVec = vertex; }
-	void set_index(std::vector<unsigned int> index) { m_indexVec = index; }
-};
-
 class Renderer
 {
+	friend class Geometry;
+
 public:
-	Renderer();
+	Renderer(unsigned int batchSize = 1000);
 	~Renderer();
 
 	void DrawTestTriangle(float x, float y, float size) const;
 
 	template <typename T>
-	void AddGeometry(Geometry* geometry, const char* id = nullptr) {}
+	void AddGeometry(Geometry& geometry, const char* id = nullptr) {}
 	template<>
-	void AddGeometry<Triangle>(Geometry* geometry, const char* id);
+	void AddGeometry<Triangle>(Geometry& geometry, const char* id);
 	template<>
-	void AddGeometry<Rect>(Geometry* geometry, const char* id);
+	void AddGeometry<Rect>(Geometry& geometry, const char* id);
 
 	void Update();
 
 	void Draw();
-	
-private:
-	std::vector<EntityStruct> m_Entities;
-
-	std::vector<Geometry*> m_Geometries;
 public:
-	unsigned int m_triangles_no = 0;
-	unsigned int m_rect_no = 0;
-	unsigned int m_circle_no = 0;
-	unsigned int m_polygon_no = 0;
+	unsigned int m_triangle_no = 0;
 private:
-	// Contains positions and corresponding indices of every object on screen
-	std::vector<float> m_vertices;
-	std::vector<unsigned int> m_indices;
+	class Batch
+	{
+	public:
+		Batch(unsigned int batchSize = 1000);
+		~Batch();
 
-	VertexArray m_vao;
-	VertexBuffer m_vbo;
-	VertexBufferLayout m_vbl;
-	//IndexBuffer m_ibo;
+		int getGeometryCount() { return m_Geometries.size(); }
+		int getVerticesCount() { return m_vertices.size(); }
+		int getIndicesCount() { return m_indices.size(); }
+		int getIndicesMaxCount() { return m_ibo.GetCount(); }
+
+		template <typename T>
+		void AddGeometry(Geometry& geometry, const char* id = nullptr) {}
+		template<>
+		void AddGeometry<Triangle>(Geometry& geometry, const char* id);
+		template<>
+		void AddGeometry<Rect>(Geometry& geometry, const char* id);
+
+		void Update();
+		void Draw();
+	private:
+		unsigned int m_BatchSize;
+
+		std::vector<Geometry> m_Geometries;
+
+		std::vector<float> m_vertices;
+		std::vector<unsigned int> m_indices;
+
+		VertexBuffer m_vbo;
+		IndexBuffer m_ibo;
+		VertexArray m_vao;
+		VertexBufferLayout m_vbl;
+	};
+
+	void AddBatch(unsigned int batchSize);
+private:
+	std::vector<Batch*> m_Batches;
+	unsigned int m_batchSize;
 };
+
 

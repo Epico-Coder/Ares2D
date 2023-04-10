@@ -17,7 +17,7 @@ public:
 	void MakeContextCurrent();
 	bool WindowOpen();
 
-	void Clear(GLfloat r = 0.0f, GLfloat g = 0.0f, GLfloat b = 0.0f, GLfloat a = 0.0);
+	void Clear(GLfloat r = 50.0f, GLfloat g = 50.0f, GLfloat b = 50.0f, GLfloat a = 255.0f);
 
 	void SwapBuffers();
 

@@ -5,12 +5,14 @@
 class IndexBuffer
 {
 public:
-	IndexBuffer(const void* data = nullptr, unsigned int count = 1000, bool dynamic = true);
+	IndexBuffer(const void* data, unsigned int count);
+	IndexBuffer();
 	~IndexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
 
+	void SetCount(unsigned int max_count = 1024);
 	void Update(const void* data, unsigned int count);
 
 	unsigned int GetCount() const;

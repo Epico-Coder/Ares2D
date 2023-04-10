@@ -5,13 +5,15 @@
 class VertexBuffer
 {
 public:
-	VertexBuffer(const void* data=nullptr, size_t size=36000, bool dynamic=1);
+	VertexBuffer(const void* data, size_t size);
+	VertexBuffer();
 	~VertexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
 
-	void Update(const void* data, size_t size);
+	void SetSize(unsigned int max_size = 36864);
+	void Update(const void* data, unsigned int size);
 private:
 	unsigned int m_buffer;
 };

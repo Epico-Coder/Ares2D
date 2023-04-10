@@ -64,11 +64,21 @@ void Rect::SetGradient(Color c1, Color c2, Color c3, Color c4)
 	}
 }
 
+glm::mat4 Rect::getModel()
+{
+	return m_Model;
+}
+
 void Rect::Translate(float x, float y)
 {
+	glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+	m_Model *= translation;
+
+	/*
 	for (int i = 0; i < 4; i++)
 	{
 		m_vertices[0 + (9 * i)] += x;
 		m_vertices[1 + (9 * i)] += y;
 	}
+	*/
 }
