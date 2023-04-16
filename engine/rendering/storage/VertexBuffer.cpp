@@ -32,9 +32,9 @@ void VertexBuffer::SetSize(unsigned int max_size)
     glBufferData(GL_ARRAY_BUFFER, max_size, nullptr, GL_DYNAMIC_DRAW);
 }
 
-void VertexBuffer::Update(const void* data, unsigned int size)
+void VertexBuffer::Update(const void* data, unsigned int size, GLintptr offset)
 {
-    glNamedBufferSubData(m_buffer, 0, size, data);
+    glNamedBufferSubData(m_buffer, offset, size, data);
 }
 
 void VertexBuffer::Unbind() const

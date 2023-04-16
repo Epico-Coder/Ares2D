@@ -93,10 +93,12 @@ void Input::char_callback(GLFWwindow* window, unsigned int codepoint)
 
 void Input::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    int height;
+    glfwGetWindowSize(window, nullptr, &height);
     for (Input* Input : m_instances) 
     {
         Input->m_mouse_pos[0] = xpos;
-        Input->m_mouse_pos[1] = ypos;
+        Input->m_mouse_pos[1] = height - ypos;
     }
 }
 

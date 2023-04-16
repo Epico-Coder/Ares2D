@@ -19,6 +19,23 @@ MessageCallback(GLenum source,
         type, severity, message);
 }
 
+void reDrawTileset(Renderer& renderer, Tileset& tileset)
+{
+    std::vector<std::vector<std::pair<unsigned int, unsigned int>>> tile_positions =
+    {
+        {{10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, { 9, 02}, { 9, 03}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, {10, 02}, {10, 03}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {03, 02}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {04, 02}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {03, 02}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {04, 02}, {10, 04}},
+        {{10, 04}, {10, 04}, {10, 04}, {07, 06}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {05, 02}, {10, 04}, {10, 04}, {10, 04}, {10, 04}, {05, 03}, {10, 04}},
+        {{00, 00}, {00, 01}, {00, 01}, {00, 01}, {00, 02}, {10, 04}, {04, 06}, {05, 06}, {10, 04}, {00, 00}, {00, 01}, {00, 01}, {00, 01}, {00, 01}, {00, 01}, {00, 02}, {00, 02}},
+        {{01, 00}, {01, 01}, {01, 01}, {01, 01}, {01, 02}, {05, 05}, {05, 05}, {05, 05}, {05, 05}, {01, 00}, {01, 01}, {01, 01}, {01, 01}, {01, 01}, {01, 01}, {01, 01}, {01, 02}}
+    };
+    tileset.DrawTilePositions(renderer, 1280, 720, tile_positions);
+}
+
 int main()
 {
     Ares2D::GLFWInit();
@@ -35,85 +52,54 @@ int main()
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, 0);
 
-    Renderer renderer;
-
     // Adding Entities into renderer
-    Triangle tri1(Vertex{ 040.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-                  Vertex{ 240.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f },
-                  Vertex{ 140.0f, 460.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f });
-
-    Triangle tri2(Vertex{ 340.0f, 260.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-                  Vertex{ 540.0f, 260.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f },
-                  Vertex{ 440.0f, 460.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f });
-
-    renderer.AddGeometry<Triangle>(tri1);
-    renderer.AddGeometry<Triangle>(tri2);
-
-    Shader shader;
-    shader.AddVertexShader();
-    shader.AddFragmentShader();
-    shader.Create();
+    // -> handle vertex inside
+    Renderer renderer(500);
+    
+    Shader shader("engine/resources/shaders/shaders/VertexShader.shader", "engine/resources/shaders/shaders/FragmentShader.shader");
     shader.Bind();
 
     Input input(win.getWindow());
 
-    std::vector<Geometry> iterable_objs = { tri1, tri2 };
-    unsigned int active_obj = 0;
+    Tileset tileset(shader, Ares2D::TEXTURE_HANDLER, "engine/resources/images/nature_tileset/nature-paltformer-tileset-16x16.png", 7, 11, 5);
 
-    float i = 0;
-    float a = 0.1f;
     // Main Loop
     while (win.WindowOpen())
     {
-        win.Clear();
+        // Clearing vertices and indices(actually this time)
+        win.Clear(0.0f, 153.0f, 219.0f);
+        renderer.Clear();
 
-        // Inputs
-        
-        //std::cout << "ENABLED: " << input.getIsEnabled() << std::endl;
-        //std::cout << "KEYBOARD: " << input.getIsKeyDown(GLFW_KEY_0) << std::endl;
-        //std::cout << "MOUSE: " << input.getIsKeyDown(GLFW_MOUSE_BUTTON_1) << std::endl;
-        //std::cout << "TEXT: " << input.getText() << std::endl;
-        //std::cout << "MOUSE_POS: " << input.getMousePos()[0] << ", " << input.getMousePos()[1] << std::endl;
-        //std::cout << "CURSOR_ENTERED: " << input.getCursorEntered() << std::endl;
-        //std::cout << "SCROLL: " << input.getScrollOffset()[0] << ", " << input.getScrollOffset()[1] << std::endl;
+        // Tileset drawing
+        reDrawTileset(renderer, tileset);
 
-        // Toggle through the Shapes
-        if (input.getIsKeyDown(GLFW_KEY_1))
-            active_obj = 0;
-        if (input.getIsKeyDown(GLFW_KEY_2))
-            active_obj = 1;
-        if (input.getIsKeyDown(GLFW_KEY_3))
-            active_obj = 2;
-        if (input.getIsKeyDown(GLFW_KEY_4))
-            active_obj = 3;
-
-        // Move Selected Shape
-        if (input.getIsKeyDown(GLFW_KEY_LEFT))
-            (iterable_objs[active_obj]).Translate(-5.0f, 0.0f);
-        if (input.getIsKeyDown(GLFW_KEY_RIGHT))
-            iterable_objs[active_obj].Translate(5.0f, 0.0f);
-        if (input.getIsKeyDown(GLFW_KEY_UP))
-            iterable_objs[active_obj].Translate(0.0f, 5.0f);
-        if (input.getIsKeyDown(GLFW_KEY_DOWN))
-            iterable_objs[active_obj].Translate(0.0f, -5.0f);
-
-        // Add a Shape
+        // Draw rect dynamically
         if (input.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
         {
-            Rect temp_rect = Rect(Vertex{ float(input.getMousePos()[0]), float(win.getHeight()) - float(input.getMousePos()[1]), i, i, i, 1.0f, 0.0f, 1.0f, 0.0f }, 100.0f, 100.0f);
-            renderer.AddGeometry<Rect>(temp_rect);
+            int size = 32.0f;
+            
+            float i = 0;
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    Rect t_00(0.0f, 0.0f, size, size, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+                    t_00.Draw(renderer, float(input.getMousePos()[0] + (x * size)), float(input.getMousePos()[1] - (y * size)));
+                    i++;
+                }
+            }
         }
 
         // Update Logic
+        // -> renderer changes when geometry does
         renderer.Update();
 
         // Convert range of position vector from -1 to 1, to normal
         // -> Create math class
         glm::mat4 view = glm::ortho(0.0f, float(win.getWidth()), 0.0f, float(win.getHeight()), -1.0f, 1.0f);
-        
         glm::mat4 mvp = view;
         shader.SetUniformMat4f("u_MVP", mvp);
-        
+
         // Update ReDraw
         shader.Bind();
 
@@ -123,9 +109,6 @@ int main()
         win.SwapBuffers();
         // OS and User events
         win.PollEvents();
-
-        i += a;
-        if ((0.0f > i) or (i > 1.0f)) { a *= -1; }
     }
 
     // Terminate after loop over

@@ -35,9 +35,9 @@ void IndexBuffer::SetCount(unsigned int max_count)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
 }
 
-void IndexBuffer::Update(const void* data, unsigned int count)
-{
-    glNamedBufferSubData(m_buffer, 0, count * sizeof(GLuint), data);
+void IndexBuffer::Update(const void* data, unsigned int count, unsigned int offset)
+{ 
+    glNamedBufferSubData(m_buffer, offset * sizeof(GLuint), count * sizeof(GLuint), data);
 }
 
 unsigned int IndexBuffer::GetCount() const

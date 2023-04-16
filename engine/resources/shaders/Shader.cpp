@@ -9,6 +9,13 @@
 
 Shader::Shader()
 {
+}
+
+Shader::Shader(const std::string& vert_file_path, const std::string& frag_file_path)
+{
+    AddVertexShader(vert_file_path);
+    AddFragmentShader(frag_file_path);
+    Create();
 
 }
 
@@ -57,6 +64,39 @@ void Shader::Create()
     glDeleteShader(fs);
 }
 
+void Shader::GetUniformData()
+{
+    GLint numActiveAttribs = 0;
+    GLint numActiveUniforms = 0;
+    glGetProgramiv(m_buffer, GL_ACTIVE_ATTRIBUTES, &numActiveAttribs);
+    glGetProgramiv(m_buffer, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
+
+    GLint maxAttribNameLength = 0;
+    glGetProgramiv(m_buffer, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxAttribNameLength);
+    std::vector<GLchar> nameData(maxAttribNameLength);
+
+    for (int attrib = 0; attrib < numActiveAttribs; ++attrib)
+    {
+        GLint arraySize = 0;
+        GLenum type = 0;
+        GLsizei actualLength = 0;
+        glGetActiveAttrib(m_buffer, attrib, maxAttribNameLength, &actualLength, &arraySize, &type, &nameData[0]);
+        std::string name((char*)&nameData[0], actualLength);
+
+        std::cout << name << std::endl;
+    }
+    for (int attrib = 0; attrib < numActiveUniforms; ++attrib)
+    {
+        GLint arraySize = 0;
+        GLenum type = 0;
+        GLsizei actualLength = 0;
+        glGetActiveUniform(m_buffer, attrib, maxAttribNameLength, &actualLength, &arraySize, &type, &nameData[0]);
+        std::string name((char*)&nameData[0], actualLength);
+
+        std::cout << name << std::endl;
+    }
+}
+
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
@@ -95,6 +135,11 @@ void Shader::Unbind()
 void Shader::SetUniform1i(const std::string& name, int v1)
 {
     glUniform1i(GetUniformLocation(name), v1);
+}
+
+void Shader::SetUniform1iv(const std::string& name, unsigned int count, int v1[])
+{
+    glUniform1iv(GetUniformLocation(name), count, v1);
 }
 
 void Shader::SetUniform1f(const std::string& name, float v1)

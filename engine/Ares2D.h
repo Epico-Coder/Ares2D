@@ -20,9 +20,10 @@
 
 #include "engine/resources/shaders/Shader.h"
 
-#include "engine/utils/input/Input.h"
+#include "engine/resources/textures/Texture.h"
+#include "engine/resources/tilesets/Tileset.h"
 
-#define ASSERT(x) if (!(x)) __debugbreak();
+#include "engine/utils/input/Input.h"
 
 #define ARES_TRUE 1
 #define ARES_FALSE 0
@@ -38,4 +39,5 @@ namespace Ares2D
     
     const GLubyte* GetVersion();
 
+    static TextureHandler TEXTURE_HANDLER;
 }

@@ -13,7 +13,7 @@ public:
 	void Unbind() const;
 
 	void SetSize(unsigned int max_size = 36864);
-	void Update(const void* data, unsigned int size);
+	void Update(const void* data, unsigned int size, GLintptr offset = 0);
 private:
 	unsigned int m_buffer;
 };
