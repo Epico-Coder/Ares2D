@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "dependancies/file/stbi_image/stb_image.h"
+#include "dependancies/stbi_image/stb_image.h"
 #include <iostream>
 
 TextureHandler::TextureHandler()

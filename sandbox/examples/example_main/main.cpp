@@ -2,9 +2,6 @@
 
 #include "engine/Ares2D.h"
 
-#include "dependancies/glm/glm.hpp"
-#include "dependancies/glm/gtc/matrix_transform.hpp"
-
 void GLAPIENTRY
 MessageCallback(GLenum source,
     GLenum type,
@@ -61,11 +58,15 @@ int main()
 
     Input input(win.getWindow());
 
-    Tileset tileset(shader, Ares2D::TEXTURE_HANDLER, "engine/resources/images/nature_tileset/nature-paltformer-tileset-16x16.png", 7, 11, 5);
+    Tileset tileset(shader, Ares2D::ARES_TEXTURE_HANDLER, "engine/resources/images/nature_tileset/nature-paltformer-tileset-16x16.png", 7, 11, 5);
+    
+    Ares2D::ARES_AUDIO_HANDLER.add("sandbox/examples/example_main/sound_bg.mp3", 1);
+    Ares2D::ARES_AUDIO_HANDLER.play(1);
 
     // Main Loop
     while (win.WindowOpen())
     {
+
         // Clearing vertices and indices(actually this time)
         win.Clear(0.0f, 153.0f, 219.0f);
         renderer.Clear();
@@ -88,6 +89,10 @@ int main()
                     i++;
                 }
             }
+
+            // Set position to 14th second
+            if (Ares2D::ARES_AUDIO_HANDLER.isPlaying(1))
+                Ares2D::ARES_AUDIO_HANDLER.setTime(1, 14000);
         }
 
         // Update Logic
