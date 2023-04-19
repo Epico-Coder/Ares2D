@@ -24,9 +24,9 @@ void Renderer::DrawTestTriangle(float x, float y, float size) const
 	glEnd();
 }
 
-void Renderer::AddGeometry(Geometry& geometry, const char* id)
+void Renderer::AddRenderable(Renderable& renderable, const char* id)
 {
-	m_Batches.back()->AddGeometry(geometry, id);
+	m_Batches.back()->AddRenderable(renderable, id);
 }
 
 void Renderer::Clear()
@@ -50,7 +50,7 @@ void Renderer::Update()
 	for (Batch* batch : m_Batches)
 	{
 		batch->Update();
-		//std::cout << "Geometries: " << batch->getGeometryCount() << std::endl;
+		//std::cout << "Geometries: " << batch->getRenderableCount() << std::endl;
 		std::cout << "Vetices: " << batch->getVerticesCount() << std::endl;
 		std::cout << "Indices: " << batch->getIndicesCount() << std::endl;
 	}
@@ -92,20 +92,20 @@ Renderer::Batch::~Batch()
 {
 }
 
-void Renderer::Batch::AddGeometry(Geometry& geometry, const char* id)
+void Renderer::Batch::AddRenderable(Renderable& renderable, const char* id)
 {
 	if (!m_indices.empty())
 	{
-		for (int i = 0; i < geometry.m_indices.size(); i++)
+		for (int i = 0; i < renderable.m_indices.size(); i++)
 		{
-			geometry.m_indices[i] += *std::max_element(m_indices.begin(), m_indices.end()) + 1;
+			renderable.m_indices[i] += *std::max_element(m_indices.begin(), m_indices.end()) + 1;
 		}
 	}
 
-	m_vertices.insert(m_vertices.end(), geometry.m_vertices.begin(), geometry.m_vertices.end());
-	m_indices.insert(m_indices.end(), geometry.m_indices.begin(), geometry.m_indices.end());
+	m_vertices.insert(m_vertices.end(), renderable.m_vertices.begin(), renderable.m_vertices.end());
+	m_indices.insert(m_indices.end(), renderable.m_indices.begin(), renderable.m_indices.end());
 	
-	//m_Geometries.push_back(geometry);
+	//m_Geometries.push_back(Renderable);
 }
 
 void Renderer::Batch::Clear()

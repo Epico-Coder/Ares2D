@@ -13,13 +13,13 @@
 #include "engine/rendering/storage/FrameBuffer.h"
 #include "engine/rendering/storage/RenderBuffer.h"
 
-#include "engine/rendering/geometry/Geometry.h"
+#include "engine/rendering/Renderable.h"
 
 #include "engine/utils/error/ErrorHandling.h"
 
 class Renderer
 {
-	friend class Geometry;
+	friend class Renderable;
 
 public:
 	Renderer(unsigned int batchSize = 1000);
@@ -27,7 +27,7 @@ public:
 
 	void DrawTestTriangle(float x, float y, float size) const;
 
-	void AddGeometry(Geometry& geometry, const char* id = nullptr);
+	void AddRenderable(Renderable& renderable, const char* id = nullptr);
 
 	void Clear();
 	void Update();
@@ -39,12 +39,12 @@ private:
 		Batch(unsigned int batchSize = 1000);
 		~Batch();
 
-		//int getGeometryCount() { return m_Geometries.size(); }
+		//int getRenderableCount() { return m_Geometries.size(); }
 		int getVerticesCount() { return m_vertices.size(); }
 		int getIndicesCount() { return m_indices.size(); }
 		int getIndicesMaxCount() { return m_ibo.GetCount(); }
 
-		void AddGeometry(Geometry& geometry, const char* id = nullptr);
+		void AddRenderable(Renderable& renderable, const char* id = nullptr);
 		
 		void Clear();
 		void Update();
@@ -52,7 +52,7 @@ private:
 	private:
 		unsigned int m_BatchSize;
 
-		//std::vector<Geometry> m_Geometries;
+		//std::vector<Renderable> m_Geometries;
 
 		std::vector<float> m_vertices;
 		std::vector<unsigned int> m_indices;

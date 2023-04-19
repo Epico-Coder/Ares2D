@@ -72,7 +72,7 @@ Rect::~Rect()
 void Rect::Draw(Renderer& renderer, int x, int y)
 {
 	SetPos(x, y);
-	renderer.AddGeometry(*this);
+	renderer.AddRenderable(*this);
 }
 
 void Rect::SetPos(int x, int y)

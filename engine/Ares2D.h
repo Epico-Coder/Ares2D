@@ -27,6 +27,7 @@
 #include "engine/resources/tilesets/Tileset.h"
 
 #include "engine/utils/input/Input.h"
+#include "engine/utils/ui/UI.h"
 
 #include <Windows.h>
 

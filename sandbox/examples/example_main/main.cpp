@@ -63,10 +63,11 @@ int main()
     Ares2D::ARES_AUDIO_HANDLER.add("sandbox/examples/example_main/sound_bg.mp3", 1);
     Ares2D::ARES_AUDIO_HANDLER.play(1);
 
+    UI UI;
+
     // Main Loop
     while (win.WindowOpen())
     {
-
         // Clearing vertices and indices(actually this time)
         win.Clear(0.0f, 153.0f, 219.0f);
         renderer.Clear();
@@ -107,8 +108,11 @@ int main()
 
         // Update ReDraw
         shader.Bind();
-
         renderer.Draw();
+
+        UI.RenderText("Ui", 300.0f, 550.0f, 1.0f, glm::vec3(0.0f, 1.0f, 1.0f));
+        UI.RenderText("hello", 300.0f, 600.0f, 1.0f, glm::vec3(0.95f, 0.7f, 0.05f));
+        shader.Bind();
 
         // Swap back and front buffers
         win.SwapBuffers();
