@@ -2,20 +2,6 @@
 
 #include "engine/Ares2D.h"
 
-void GLAPIENTRY
-MessageCallback(GLenum source,
-    GLenum type,
-    GLuint id,
-    GLenum severity,
-    GLsizei length,
-    const GLchar* message,
-    const void* userParam)
-{
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-        type, severity, message);
-}
-
 void reDrawTileset(Renderer& renderer, Tileset& tileset)
 {
     std::vector<std::vector<std::pair<unsigned int, unsigned int>>> tile_positions =
@@ -35,48 +21,37 @@ void reDrawTileset(Renderer& renderer, Tileset& tileset)
 
 int main()
 {
-    Ares2D::GLFWInit();
+    Control ctrl = Ares2D::Init(1280, 720, "Abstracted window");
+    std::cout << ctrl.GetVersion() << std::endl;
 
-    Window win(1280, 720, "Abstracted window", true);
-    win.MakeContextCurrent();
+    ctrl.EnableDebug();
 
-    Ares2D::GLEWInit();
-
-    // Print OpenGL Version
-    std::cout << Ares2D::GetVersion() << std::endl;
-
-    // temp debug here
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    Ares2D::WINDOW.SetBlending(true);
 
     // Adding Entities into renderer
-    // -> handle vertex inside
-    Renderer renderer(500);
     
-    Shader shader("engine/resources/shaders/shaders/VertexShader.shader", "engine/resources/shaders/shaders/FragmentShader.shader");
-    shader.Bind();
+    Ares2D::SHADER.AddShader("engine/resources/shaders/shaders/VertexShader.shader", "engine/resources/shaders/shaders/FragmentShader.shader", 1);
+    Ares2D::SHADER.BindShader(1);
 
-    Input input(win.getWindow());
+    Ares2D::USER.Init();
 
-    Tileset tileset(shader, Ares2D::ARES_TEXTURE_HANDLER, "engine/resources/images/nature_tileset/nature-paltformer-tileset-16x16.png", 7, 11, 5);
+    Tileset tileset(Ares2D::TEXTURE, "engine/resources/images/nature_tileset/nature-paltformer-tileset-16x16.png", 7, 11, 5);
     
-    Ares2D::ARES_AUDIO_HANDLER.add("sandbox/examples/example_main/sound_bg.mp3", 1);
-    Ares2D::ARES_AUDIO_HANDLER.play(1);
-
-    UI UI;
+    Ares2D::AUDIO.add("sandbox/examples/example_main/sound_bg.mp3", 1);
+    Ares2D::AUDIO.play(1);
 
     // Main Loop
-    while (win.WindowOpen())
+    while (Ares2D::WINDOW.WindowOpen())
     {
         // Clearing vertices and indices(actually this time)
-        win.Clear(0.0f, 153.0f, 219.0f);
-        renderer.Clear();
+        Ares2D::WINDOW.Clear(Color{ 0.0f, 153.0f, 219.0f, 1.0f });
+        Ares2D::RENDERER.Clear();
 
         // Tileset drawing
-        reDrawTileset(renderer, tileset);
-
+        reDrawTileset(Ares2D::RENDERER, tileset);
+        
         // Draw rect dynamically
-        if (input.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+        if (Ares2D::INPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
         {
             int size = 32.0f;
             
@@ -86,42 +61,43 @@ int main()
                 for (int x = -1; x <= 1; x++)
                 {
                     Rect t_00(0.0f, 0.0f, size, size, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-                    t_00.Draw(renderer, float(input.getMousePos()[0] + (x * size)), float(input.getMousePos()[1] - (y * size)));
+                    t_00.Draw(Ares2D::RENDERER, float(Ares2D::INPUT.getMousePos()[0] + (x * size)), float(Ares2D::INPUT.getMousePos()[1] - (y * size)));
                     i++;
                 }
             }
+        }
 
+        if (Ares2D::INPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
+        {
             // Set position to 14th second
-            if (Ares2D::ARES_AUDIO_HANDLER.isPlaying(1))
-                Ares2D::ARES_AUDIO_HANDLER.setTime(1, 14000);
+            if (Ares2D::AUDIO.isPlaying(1))
+                Ares2D::AUDIO.setTime(1, 14000);
         }
 
         // Update Logic
-        // -> renderer changes when geometry does
-        renderer.Update();
+        Ares2D::RENDERER.Update();
 
         // Convert range of position vector from -1 to 1, to normal
         // -> Create math class
-        glm::mat4 view = glm::ortho(0.0f, float(win.getWidth()), 0.0f, float(win.getHeight()), -1.0f, 1.0f);
+        glm::mat4 view = glm::ortho(0.0f, float(Ares2D::WINDOW.getWidth()), 0.0f, float(Ares2D::WINDOW.getHeight()), -1.0f, 1.0f);
         glm::mat4 mvp = view;
-        shader.SetUniformMat4f("u_MVP", mvp);
+        Ares2D::SHADER.SetUniformMat4f(1, "u_MVP", mvp);
 
         // Update ReDraw
-        shader.Bind();
-        renderer.Draw();
+        Ares2D::SHADER.BindShader(1);
+        Ares2D::RENDERER.Draw();
 
-        UI.RenderText("Ui", 300.0f, 550.0f, 1.0f, glm::vec3(0.0f, 1.0f, 1.0f));
-        UI.RenderText("hello", 300.0f, 600.0f, 1.0f, glm::vec3(0.95f, 0.7f, 0.05f));
-        shader.Bind();
+        Ares2D::USER.RenderText("Ui", 300.0f, 550.0f, 1.0f, glm::vec3(0.0f, 1.0f, 1.0f));
+        Ares2D::USER.RenderText("hello", 300.0f, 600.0f, 1.0f, glm::vec3(0.95f, 0.7f, 0.05f));
+        Ares2D::SHADER.BindShader(1);
 
         // Swap back and front buffers
-        win.SwapBuffers();
         // OS and User events
-        win.PollEvents();
+        Ares2D::WINDOW.Update();
     }
 
     // Terminate after loop over
-    win.Terminate();
+    Ares2D::WINDOW.Terminate();
 
     return 0;
 }

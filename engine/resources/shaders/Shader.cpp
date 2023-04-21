@@ -7,6 +7,158 @@
 
 #include "dependancies/glew/include/GL/glew.h"
 
+ShaderHandler::ShaderHandler()
+{
+}
+
+ShaderHandler::~ShaderHandler()
+{
+}
+
+void ShaderHandler::AddShader(const std::string& vert_file_path, const std::string& frag_file_path, int shaderID)
+{
+    m_Shaders[shaderID] = new Shader(vert_file_path, frag_file_path);
+}
+
+void ShaderHandler::RemoveShader(int shaderID)
+{
+    auto iter =  m_Shaders.find(shaderID);
+    if (iter == m_Shaders.end()) {
+        std::cout << "Audio with ID " << shaderID << " does not exist" << std::endl;
+    }
+    else
+    {
+        m_Shaders.erase(iter);
+    }
+}
+
+void ShaderHandler::BindShader(int shaderID)
+{
+    auto iter = m_Shaders.find(shaderID);
+    if (iter == m_Shaders.end()) {
+        std::cout << "Audio with ID " << shaderID << " does not exist" << std::endl;
+    }
+    else
+    {
+        iter->second->Bind();
+    }
+}
+
+void ShaderHandler::CreateUniform1i(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniform1iv(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniform1f(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniform3f(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniform4i(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniform4f(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::CreateUniformMat4f(int shaderID, const std::string& name)
+{
+
+}
+
+void ShaderHandler::SetUniform1i(int shaderID, const std::string& name, int v1)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform1i(name, v1);
+    }
+}
+
+void ShaderHandler::SetUniform1iv(int shaderID, const std::string& name, unsigned int count, int v1[])
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform1iv(name, count, v1);
+    }
+}
+
+void ShaderHandler::SetUniform1f(int shaderID, const std::string& name, float v1)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform1f(name, v1);
+    }
+}
+
+void ShaderHandler::SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform3f(name, v1, v2, v3);
+    }
+}
+
+void ShaderHandler::SetUniform4i(int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform4i(name, v1, v2, v3, v4);
+    }
+}
+
+void ShaderHandler::SetUniform4f(int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform4f(name, v1, v2, v3, v4);
+    }
+}
+
+void ShaderHandler::SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniformMat4f(name, matrix);
+    }
+}
+
+void ShaderHandler::GetUniformData(int shaderID, const std::string& name)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->GetUniformData(name);
+    }
+}
+
+void ShaderHandler::GetAttribData(int shaderID, const std::string& name)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->GetUniformData(name);
+    }
+}
+
+std::string ShaderHandler::GetData(int shaderID)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        return shader->second->GetData();
+    }
+}
+
 Shader::Shader()
 {
 }
@@ -16,7 +168,6 @@ Shader::Shader(const std::string& vert_file_path, const std::string& frag_file_p
     AddVertexShader(vert_file_path);
     AddFragmentShader(frag_file_path);
     Create();
-
 }
 
 Shader::~Shader()
@@ -24,12 +175,12 @@ Shader::~Shader()
     glDeleteProgram(m_buffer);
 }
 
-void Shader::AddVertexShader(std::string filepath)
+void Shader::AddVertexShader(const std::string& filepath)
 {
     m_vertexShader.append(ParseShader(filepath));
 }
 
-void Shader::AddFragmentShader(std::string filepath)
+void Shader::AddFragmentShader(const std::string& filepath)
 {
     m_fragmentShader.append(ParseShader(filepath));
 }
@@ -64,9 +215,18 @@ void Shader::Create()
     glDeleteShader(fs);
 }
 
-void Shader::GetUniformData()
+void Shader::GetUniformData(const std::string& name)
 {
-    GLint numActiveAttribs = 0;
+}
+
+void Shader::GetAttribData(const std::string& name)
+{
+}
+
+std::string Shader::GetData()
+{
+    /*
+        GLint numActiveAttribs = 0;
     GLint numActiveUniforms = 0;
     glGetProgramiv(m_buffer, GL_ACTIVE_ATTRIBUTES, &numActiveAttribs);
     glGetProgramiv(m_buffer, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
@@ -95,6 +255,8 @@ void Shader::GetUniformData()
 
         std::cout << name << std::endl;
     }
+    */
+    return std::string();
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)

@@ -3,16 +3,20 @@
 #include <iostream>
 #include <algorithm>
 
-Renderer::Renderer(unsigned int batchSize)
+Renderer::Renderer()
 {
-	m_batchSize = batchSize;
-	AddBatch(m_batchSize);
 }
 
 Renderer::~Renderer()
 {
 	for (Batch* batch : m_Batches)
 		delete(batch);
+}
+
+void Renderer::Init(unsigned int batchSize)
+{
+	m_batchSize = batchSize;
+	AddBatch(m_batchSize);
 }
 
 void Renderer::DrawTestTriangle(float x, float y, float size) const

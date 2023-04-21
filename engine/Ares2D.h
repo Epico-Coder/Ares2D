@@ -29,29 +29,47 @@
 #include "engine/utils/input/Input.h"
 #include "engine/utils/ui/UI.h"
 
+#include "engine/Control.h"
+
 #include <Windows.h>
 
 #define ARES_TRUE 1
 #define ARES_FALSE 0
+#define ARES_INVALID -1
 
 #define ARES_KEY_LEFT GLFW_KEY_LEFT
 
 namespace Ares2D
-{
-    unsigned int GLFWInit();
-    unsigned int GLEWInit();
-    
-    const GLubyte* GetVersion();
+{   
+    // Main
+    static Window WINDOW;
+    static Renderer RENDERER;
+    static Input INPUT;
 
-    // static Window ARES_WINDOW;
-    // static Renderer ARES_RENDERER;
-    // static Input ARES_INPUT;
+    // Rendering
+    static AudioHandler AUDIO;
+    static ShaderHandler SHADER;
+    static TextureHandler TEXTURE;
+    // static ImageHandler IMAGE;
+     
+    // Help
+    static UI USER;
+    // static PhysicsHandler PHYSICS;
+    // static Time CLOCK;
+    // static Math MATH;
 
-    // static UI ARES_UI;
+    static Control Init(int width, int height, const char* title)
+    {
+        if (!glfwInit())
+            std::cout << "Error 1 while Initialization" << std::endl;
+        if (!WINDOW.Init(width, height, title))
+            std::cout << "Error 3 while Initialization" << std::endl;
+        if (glewInit() != GLEW_OK)
+            std::cout << "Error 2 while Initialization" << std::endl;
 
-    static AudioHandler ARES_AUDIO_HANDLER;
+        RENDERER.Init(1000);
+        INPUT.Init(WINDOW.GetWindow());
 
-    // static ImageHandler ARES_IMAGE_HANDLER;
-    // static ShaderHandler ARES_SHADER_HANDLER
-    static TextureHandler ARES_TEXTURE_HANDLER;
+        return Control(&WINDOW, &RENDERER);
+    }
 }

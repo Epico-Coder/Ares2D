@@ -22,8 +22,10 @@ class Renderer
 	friend class Renderable;
 
 public:
-	Renderer(unsigned int batchSize = 1000);
+	Renderer();
 	~Renderer();
+
+	void Init(unsigned int batchSize = 1000);
 
 	void DrawTestTriangle(float x, float y, float size) const;
 
