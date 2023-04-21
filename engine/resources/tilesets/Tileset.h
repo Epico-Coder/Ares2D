@@ -8,7 +8,7 @@
 class Tileset
 {
 public:
-	Tileset(Shader& shader, TextureHandler& texture_handler, const std::string& filePath, int rows, int cols, float size_mult = 1);
+	Tileset(TextureHandler& texture_handler, const std::string& filePath, int rows, int cols, float size_mult = 1);
 	~Tileset();
 
 	Rect GetTile(int row, int col);

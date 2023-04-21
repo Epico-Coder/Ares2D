@@ -4,12 +4,17 @@
 
 std::vector<Input*> Input::m_instances;
 
-Input::Input(GLFWwindow* window, std::vector<int> keysToMonitor)
+Input::Input()
+{
+}
+
+Input::~Input() {
+    m_instances.erase(std::remove(m_instances.begin(), m_instances.end(), this), m_instances.end());
+}
+
+void Input::Init(GLFWwindow* window)
 {
     m_isEnabled = true;
-
-    for (int key : keysToMonitor)
-        m_keys[key] = false;
 
     m_text = "";
     m_mouse_pos = { 0, 0 };
@@ -18,10 +23,6 @@ Input::Input(GLFWwindow* window, std::vector<int> keysToMonitor)
 
     setupInputs(window);
     Input::m_instances.push_back(this);
-}
-
-Input::~Input() {
-    m_instances.erase(std::remove(m_instances.begin(), m_instances.end(), this), m_instances.end());
 }
 
 bool Input::getIsKeyDown(int key) {

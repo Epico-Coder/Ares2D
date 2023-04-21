@@ -13,7 +13,7 @@ public:
 
 	unsigned int GetNumTextures() { return m_textures_used; }
 
-	void AddTextureArray(Shader& shader, const std::string& id, int width, int height);
+	void AddTextureArray(const std::string& id, int width, int height);
 	void AddTexture(const std::string& id, const std::string& filePath);
 
 	void Bind();
@@ -24,7 +24,7 @@ private:
 	class TextureArray
 	{
 	public:
-		TextureArray(Shader& shader, int width, int height, unsigned int num_textures=2048);
+		TextureArray(int width, int height, unsigned int num_textures=2048);
 		~TextureArray();
 
 		void AddTexture(const std::string& filePath);
