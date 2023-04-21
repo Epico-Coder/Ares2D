@@ -3,16 +3,8 @@
 
 UI::UI()
 {
-}
-
-UI::~UI()
-{
-}
-
-void UI::Init()
-{
     FT_Library ft;
-
+    
     if (FT_Init_FreeType(&ft))
     {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -90,6 +82,10 @@ void UI::Init()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+UI::~UI()
+{
 }
 
 void UI::RenderText(const std::string& text, float x, float y, float scale, glm::vec3 color)

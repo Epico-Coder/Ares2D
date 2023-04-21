@@ -8,10 +8,8 @@
 
 class Input {
 public:
-	Input();
+	Input(GLFWwindow* window, std::vector<int> keysToMonitor={});
 	~Input();
-
-	void Init(GLFWwindow* window);
 
 	bool getIsKeyDown(int key);
 	bool getisMouseButtonDown(int button);

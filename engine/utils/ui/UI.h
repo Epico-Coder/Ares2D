@@ -16,10 +16,8 @@ struct Character {
 class UI : public Renderable
 {
 public:
-    UI();
+	UI();
 	~UI();
-
-    void Init();
 
     void RenderText(const std::string& text, float x, float y, float scale, glm::vec3 color);
 private:

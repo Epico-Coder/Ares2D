@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-Tileset::Tileset(TextureHandler& texture_handler, const std::string& filePath, int rows, int cols, float size_mult)
+Tileset::Tileset(Shader& shader, TextureHandler& texture_handler, const std::string& filePath, int rows, int cols, float size_mult)
 {
 	std::vector<int> size = texture_handler.GetSize(filePath);
 	m_sheetWidth = size[0];
 	m_sheetHeight = size[1];
 
-	texture_handler.AddTextureArray("Tileset", m_sheetWidth, m_sheetHeight);
+	texture_handler.AddTextureArray(shader, "Tileset", m_sheetWidth, m_sheetHeight);
 	texture_handler.AddTexture("Tileset", filePath);
 	texture_handler.Bind();
 

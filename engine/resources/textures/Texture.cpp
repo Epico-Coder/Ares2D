@@ -4,6 +4,7 @@
 
 TextureHandler::TextureHandler()
 {
+
 }
 
 TextureHandler::~TextureHandler()
@@ -12,9 +13,9 @@ TextureHandler::~TextureHandler()
 		delete(tex_array.second);
 }
 
-void TextureHandler::AddTextureArray(const std::string& id, int width, int height)
+void TextureHandler::AddTextureArray(Shader& shader, const std::string& id, int width, int height)
 {
-	m_texture_arrays.push_back(std::make_pair(id, new TextureArray(width, height)));
+	m_texture_arrays.push_back(std::make_pair(id, new TextureArray(shader, width, height)));
 	m_textures_used++;
 }
 
@@ -49,7 +50,7 @@ std::vector<int> TextureHandler::GetSize(const std::string& filePath)
 	return std::vector<int>{width, height};
 }
 
-TextureHandler::TextureArray::TextureArray(int width, int height, unsigned int num_textures)
+TextureHandler::TextureArray::TextureArray(Shader& shader, int width, int height, unsigned int num_textures)
 {
 	m_width = width;
 	m_height = height;
@@ -68,6 +69,9 @@ TextureHandler::TextureArray::TextureArray(int width, int height, unsigned int n
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	int tex_array_buffer[]{ 0,1,2,3,4,5,6,7 };
+	shader.SetUniform1iv("u_TexArray", 8, tex_array_buffer);
 }
 
 TextureHandler::TextureArray::~TextureArray()
