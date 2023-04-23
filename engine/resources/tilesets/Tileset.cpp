@@ -17,10 +17,8 @@ Tileset::Tileset(TextureHandler& texture_handler, const std::string& filePath, i
 
 	m_tileWidth = m_sheetWidth / m_rows;
 	m_tileHeight = m_sheetHeight / m_cols;
-	std::cout << m_sheetHeight << std::endl;
 
 	m_Tiles.resize(cols, std::vector<Rect>(rows));
-	std::cout << m_Tiles.size() << std::endl;
 
 	for (int j = 0; j < cols; j++)
 	{

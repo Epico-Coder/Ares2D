@@ -5,6 +5,20 @@
 #include <string>
 #include <vector>
 
+class Texture
+{
+public:
+	Texture(int width, int heigth);
+	~Texture();
+
+	void Bind();
+	void Unbind();
+
+	unsigned int getID() const;
+private:
+	unsigned int m_buffer;
+};
+
 class TextureHandler
 {
 public:

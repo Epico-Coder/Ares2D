@@ -79,7 +79,6 @@ void TextureHandler::TextureArray::AddTexture(const std::string& filePath)
 {
 	stbi_set_flip_vertically_on_load(1);
 	unsigned char* tex_data = stbi_load(filePath.c_str(), &m_width, &m_height, &m_BPP, STBI_rgb_alpha);
-	std::cout << m_BPP << std::endl;
 	if (!tex_data)
 	{
 		std::cout << "\nError: Failed to load texture" << std::endl;
@@ -102,4 +101,32 @@ void TextureHandler::TextureArray::Bind(unsigned int slot)
 void TextureHandler::TextureArray::Unbind()
 {
 	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+}
+
+Texture::Texture(int width, int height)
+{
+	glGenTextures(1, &m_buffer);
+	Bind();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+Texture::~Texture()
+{
+}
+
+void Texture::Bind()
+{
+	glBindTexture(GL_TEXTURE_2D, m_buffer);
+}
+
+void Texture::Unbind()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+unsigned int Texture::getID() const
+{
+	return m_buffer;
 }

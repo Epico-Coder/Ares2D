@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <map>
 #include "dependancies/glm/glm.hpp"
 
 class Shader
@@ -23,6 +24,8 @@ public:
 	void SetUniform1i(const std::string& name, int v1);
 	void SetUniform1iv(const std::string& name, unsigned int count, int v1[]);
 	void SetUniform1f(const std::string& name, float v1);
+	void SetUniform1fv(const std::string& name, unsigned int count, float v1[]);
+	void SetUniform2fv(const std::string& name, const glm::vec2& vec);
 	void SetUniform3f(const std::string& name, float v1, float v2, float v3);
 	void SetUniform4i(const std::string& name, int v1, int v2, int v3, int v4);
 	void SetUniform4f(const std::string& name, float v1, float v2, float v3, float v4);
@@ -39,7 +42,7 @@ private:
 	unsigned int m_buffer;
 	std::string m_vertexShader = "";
 	std::string m_fragmentShader = "";
-	std::unordered_map<std::string, int> m_uniformLocationCache;
+	std::map<std::string, int> m_uniformLocationCache;
 	int count;
 };
 

@@ -15,6 +15,8 @@
 #include "engine/rendering/storage/VertexBufferLayout.h"
 #include "engine/rendering/storage/VertexArray.h"
 #include "engine/rendering/storage/IndexBuffer.h"
+#include "engine/rendering/storage/FrameBuffer.h"
+#include "engine/rendering/storage/RenderBuffer.h"
 
 #include "engine/rendering/geometry/Triangle.h"
 #include "engine/rendering/geometry/Rect.h"

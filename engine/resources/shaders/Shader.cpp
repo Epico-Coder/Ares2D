@@ -205,7 +205,7 @@ void Shader::Create()
     m_buffer = glCreateProgram();
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, m_vertexShader);
     unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, m_fragmentShader);
-
+    
     glAttachShader(m_buffer, vs);
     glAttachShader(m_buffer, fs);
     glLinkProgram(m_buffer);
@@ -307,6 +307,17 @@ void Shader::SetUniform1iv(const std::string& name, unsigned int count, int v1[]
 void Shader::SetUniform1f(const std::string& name, float v1)
 {
     glUniform1f(GetUniformLocation(name), v1);
+}
+
+void Shader::SetUniform1fv(const std::string& name, unsigned int count, float v1[])
+{
+    glUniform1fv(GetUniformLocation(name), count, v1);
+}
+
+void Shader::SetUniform2fv(const std::string& name, const glm::vec2& vec)
+{
+    GLfloat data[2] = { vec.x, vec.y };
+    glUniform2fv(GetUniformLocation(name), 1, data);
 }
 
 void Shader::SetUniform3f(const std::string& name, float v1, float v2, float v3)

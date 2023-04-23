@@ -20,5 +20,5 @@ void main()
     v_TexArrayID = a_TexArrayID;
     v_TexArrayIdx = a_TexArrayIdx;
     
-    gl_Position = u_MVP * vec4(a_Position, 1.0, 1.0);
+    gl_Position = u_MVP * vec4(a_Position, 0.0, 1.0);
 }
