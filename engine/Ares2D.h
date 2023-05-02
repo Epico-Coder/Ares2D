@@ -26,10 +26,14 @@
 #include "engine/resources/shaders/Shader.h"
 
 #include "engine/resources/textures/Texture.h"
-#include "engine/resources/tilesets/Tileset.h"
 
 #include "engine/utils/input/Input.h"
 #include "engine/utils/ui/UI.h"
+#include "engine/utils/math/Math.h"
+#include "engine/utils/color/Color.h"
+
+
+#include "engine/resources/vfx/VFX.h"
 
 #include "engine/Control.h"
 
@@ -41,6 +45,9 @@
 
 #define ARES_KEY_LEFT GLFW_KEY_LEFT
 
+#define ARES_NO_COLOR Color{0.0f, 0.0f, 0.0f, 0.0f}
+
+
 namespace Ares2D
 {   
     // Main
@@ -51,8 +58,9 @@ namespace Ares2D
     // Rendering
     static AudioHandler AUDIO;
     static ShaderHandler SHADER;
-    static TextureHandler TEXTURE;
+    static TextureHandler TEXTURE(300, 300);
     // static ImageHandler IMAGE;
+    static VFXHandler VFX(&RENDERER, &TEXTURE);
      
     // Help
     static UI USER;
@@ -71,6 +79,7 @@ namespace Ares2D
 
         RENDERER.Init(1000);
         INPUT.Init(WINDOW.GetWindow());
+        TEXTURE.Init();
 
         return Control(&WINDOW, &RENDERER);
     }

@@ -1,61 +1,86 @@
 #pragma once
 
 #include "dependancies/glew/include/GL/glew.h"
+#include "dependancies/stbi_image/stb_image.h"
+#include "dependancies/glm/glm.hpp"
+
 #include "engine/resources/shaders/Shader.h"
+
+#include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
-class Texture
+class Texture 
 {
 public:
-	Texture(int width, int heigth);
-	~Texture();
+    Texture();
+    Texture(const std::string& filepath);
+    Texture(int width, int height, unsigned char* pixels);
+    ~Texture();
 
-	void Bind();
-	void Unbind();
+    void LoadData(unsigned char* data);
 
-	unsigned int getID() const;
+    void Bind();
+    void Unbind();
+
+    int GetWidth();
+    int GetHeight();
+    GLuint GetTextureID();
 private:
-	unsigned int m_buffer;
+    GLuint m_buffer;
+
+    int m_width;
+    int m_height;
+    int m_bpp;
+
+    bool m_is_loaded;
 };
 
-class TextureHandler
+struct TextureUse
+{
+    std::vector<std::pair<float, float>> m_tex_cords;
+    int m_texture_id;
+};
+
+class TextureAtlas
 {
 public:
-	TextureHandler();
-	~TextureHandler();
+    TextureAtlas(GLuint& buffer, int width, int height, int id);
+    ~TextureAtlas();
 
-	unsigned int GetNumTextures() { return m_textures_used; }
-
-	void AddTextureArray(const std::string& id, int width, int height);
-	void AddTexture(const std::string& id, const std::string& filePath);
-
-	void Bind();
-	void Unbind() const;
-
-	std::vector<int> GetSize(const std::string& filePath);
+    bool PreAddTexture(const std::string& filepath);
+    TextureUse AddTexture(const std::string& filepath);
+    
+    void Bind();
+    int GetID();
 private:
-	class TextureArray
-	{
-	public:
-		TextureArray(int width, int height, unsigned int num_textures=2048);
-		~TextureArray();
-
-		void AddTexture(const std::string& filePath);
-
-		void Bind(unsigned int slot = 0);
-		void Unbind();
-	private:
-		unsigned int m_buffer;
-
-		int m_width;
-		int m_height;
-		int m_BPP;
-		unsigned int m_num_textures;
-		unsigned int m_added_textures;
-	};
-private:
-	std::vector<std::pair<std::string, TextureArray*>> m_texture_arrays;
-	unsigned int m_textures_used;
+    GLuint m_buffer;
+    float m_width, m_height;
+    float m_xoffset, m_yoffset, m_max_height_in_row;
+    int m_ID;
 };
 
+class TextureHandler {
+public:
+    TextureHandler(int width, int height);
+    ~TextureHandler();
+
+    // Add first atlas
+    void Init();
+
+    //void AddTexture(int width, int height, unsigned char* data, int texID);
+    //bool AddTexture(const std::string& filepath, int& textureID);
+
+    // Add a texture to the last texture atlas
+    TextureUse AddTexture(const std::string& filepath);
+
+    //void RemoveTexture(int texID);
+
+    void BindTexture(int textureID);
+private:
+    GLuint m_buffer;
+
+    std::vector<TextureAtlas*> m_textureAtlases;
+    float m_atlas_width, m_atlas_height;
+};

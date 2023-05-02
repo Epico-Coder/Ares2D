@@ -5,6 +5,7 @@
 #include "engine/rendering/Renderer.h"
 #include "engine/resources/shaders/Shader.h"
 #include "engine/resources/textures/Texture.h"
+#include "engine/rendering/geometry/Rect.h"
 
 struct Character {
     unsigned int TextureID;  // ID handle of the glyph texture
@@ -13,15 +14,34 @@ struct Character {
     unsigned int Advance;    // Offset to advance to next glyph
 };
 
+
+
+
+class Font
+{
+public:
+private:
+};
+
+
 class UI : public Renderable
 {
 public:
     UI();
 	~UI();
 
+    // Old
     void Init();
 
-    void RenderText(const std::string& text, float x, float y, float scale, glm::vec3 color);
+    // Old
+    void RenderText(Renderer& renderer, const std::string& text, float x, float y, float scale, glm::vec3 color);
+
+    // New
+    //void Init(TextureHandler& texture_handler);
+
+    // New
+    //void RenderText(Font font, const std::string& text, int x, int y, glm::vec4 color);
+
 private:
     std::map<char, Character> Characters;
     Shader m_shader;

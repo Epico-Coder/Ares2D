@@ -26,12 +26,9 @@ void UI::Init()
 
     FT_Set_Pixel_Sizes(face, 0, 48);
 
-    if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
-    {
-        std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-    }
-
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+
+    //texture_handler.AddTextureArray("3", 48, 48);
 
     for (unsigned char c = 0; c < 128; c++)
     {
@@ -41,6 +38,9 @@ void UI::Init()
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
             continue;
         }
+
+        //texture_handler.AddTexture("3", face->glyph->bitmap.buffer);
+
         // generate texture
         unsigned int texture;
         glGenTextures(1, &texture);
@@ -61,6 +61,7 @@ void UI::Init()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         // now store character for later use
         Character character = {
             texture,
@@ -92,7 +93,7 @@ void UI::Init()
     glBindVertexArray(0);
 }
 
-void UI::RenderText(const std::string& text, float x, float y, float scale, glm::vec3 color)
+void UI::RenderText(Renderer& renderer, const std::string& text, float x, float y, float scale, glm::vec3 color)
 {
     m_shader.Bind();
 
@@ -130,6 +131,10 @@ void UI::RenderText(const std::string& text, float x, float y, float scale, glm:
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        //Rect rect(x, y, w, h, 1, 0, color.r, color.g, color.b, 1.0f);
+        //rect.Draw(renderer, x, y);
+
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)

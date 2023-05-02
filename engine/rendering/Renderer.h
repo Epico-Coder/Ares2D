@@ -17,6 +17,11 @@
 
 #include "engine/utils/error/ErrorHandling.h"
 
+#include "engine/resources/textures/Texture.h"
+
+#include "engine/utils/color/Color.h"
+#include "engine/utils/math/Math.h"
+
 class Renderer
 {
 	friend class Renderable;

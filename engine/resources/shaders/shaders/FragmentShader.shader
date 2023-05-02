@@ -5,9 +5,8 @@ layout(location = 0) out vec4 o_Color;
 in vec4 v_Color;
 in vec2 v_TexCords;
 in float v_TexArrayID;
-in float v_TexArrayIdx;
 
-uniform sampler2DArray u_TexArray[8];
+uniform sampler2DArray u_TexArray;
 
 void main()
 {
@@ -18,7 +17,6 @@ void main()
     }
     else
     {
-        int idx = int(v_TexArrayIdx);
-        o_Color = texture(u_TexArray[id], vec3(v_TexCords, idx));
+        o_Color = texture(u_TexArray, vec3(v_TexCords, id));
     }
 }

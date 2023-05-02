@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <map>
 #include "dependancies/glm/glm.hpp"
+#include "engine/resources/shaders/shader_print.h"
 
 class Shader
 {
@@ -16,10 +17,6 @@ public:
 	void AddFragmentShader(const std::string& filepath = "engine/resources/shaders/shaders/FragmentShader.shader");
 
 	void Create();
-
-	void GetUniformData(const std::string& name);
-	void GetAttribData(const std::string& name);
-	std::string GetData();
 
 	void SetUniform1i(const std::string& name, int v1);
 	void SetUniform1iv(const std::string& name, unsigned int count, int v1[]);
@@ -34,12 +31,13 @@ public:
 	void Bind();
 	void Unbind();
 
+	void Print();
 private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	std::string ParseShader(std::string filepath);
 	int GetUniformLocation(const std::string& name);
 private:
-	unsigned int m_buffer;
+	GLuint m_buffer;
 	std::string m_vertexShader = "";
 	std::string m_fragmentShader = "";
 	std::map<std::string, int> m_uniformLocationCache;
@@ -69,15 +67,13 @@ public:
 	void SetUniform1i(int shaderID, const std::string& name, int v1);
 	void SetUniform1iv(int shaderID, const std::string& name, unsigned int count, int v1[]);
 	void SetUniform1f(int shaderID, const std::string& name, float v1);
+	void SetUniform2fv(int shaderID, const std::string& name, const glm::vec2& vec);
 	void SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3);
 	void SetUniform4i(int shaderID, const std::string& name, int v1, int v2, int v3, int v4);
 	void SetUniform4f(int shaderID, const std::string& name, float v1, float v2, float v3, float v4);
 	void SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix);
 
-	void GetUniformData(int shaderID, const std::string& name);
-	void GetAttribData(int shaderID, const std::string& name);
-
-	std::string GetData(int shaderID);
+	void PrintShader(int shaderID);
 private:
 	std::unordered_map<int, Shader*> m_Shaders;
 };

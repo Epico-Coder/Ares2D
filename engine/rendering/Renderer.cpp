@@ -81,10 +81,10 @@ Renderer::Batch::Batch(unsigned int batchSize)
 	m_vbo.SetSize(batchSize * sizeof(Vertex) * sizeof(GLfloat));
 	m_ibo.SetCount(batchSize * 10);
 
+	// Should match the vertex
 	m_vbl.Push<GLfloat>(2);
 	m_vbl.Push<GLfloat>(4);
 	m_vbl.Push<GLfloat>(2);
-	m_vbl.Push<GLfloat>(1);
 	m_vbl.Push<GLfloat>(1);
 
 	m_vao.AddBuffer(m_vbo, m_vbl);

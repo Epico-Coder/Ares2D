@@ -11,7 +11,6 @@ Triangle::Triangle(Vertex v1, Vertex v2, Vertex v3)
 		for (float f : vertex.TexCords)
 			m_vertices.push_back(f);
 		m_vertices.push_back(vertex.TexID);
-		m_vertices.push_back(vertex.TexIdx);
 	}
 
 	m_indices = { 0, 1, 2 };

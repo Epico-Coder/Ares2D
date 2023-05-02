@@ -103,6 +103,14 @@ void ShaderHandler::SetUniform1f(int shaderID, const std::string& name, float v1
     }
 }
 
+void ShaderHandler::SetUniform2fv(int shaderID, const std::string& name, const glm::vec2& vec)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform2fv(name, vec);
+    }
+}
+
 void ShaderHandler::SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3)
 {
     auto shader = m_Shaders.find(shaderID);
@@ -135,27 +143,11 @@ void ShaderHandler::SetUniformMat4f(int shaderID, const std::string& name, const
     }
 }
 
-void ShaderHandler::GetUniformData(int shaderID, const std::string& name)
+void ShaderHandler::PrintShader(int shaderID)
 {
     auto shader = m_Shaders.find(shaderID);
     if (shader != m_Shaders.end()) {
-        shader->second->GetUniformData(name);
-    }
-}
-
-void ShaderHandler::GetAttribData(int shaderID, const std::string& name)
-{
-    auto shader = m_Shaders.find(shaderID);
-    if (shader != m_Shaders.end()) {
-        shader->second->GetUniformData(name);
-    }
-}
-
-std::string ShaderHandler::GetData(int shaderID)
-{
-    auto shader = m_Shaders.find(shaderID);
-    if (shader != m_Shaders.end()) {
-        return shader->second->GetData();
+        shader->second->Print();
     }
 }
 
@@ -215,49 +207,6 @@ void Shader::Create()
     glDeleteShader(fs);
 }
 
-void Shader::GetUniformData(const std::string& name)
-{
-}
-
-void Shader::GetAttribData(const std::string& name)
-{
-}
-
-std::string Shader::GetData()
-{
-    /*
-        GLint numActiveAttribs = 0;
-    GLint numActiveUniforms = 0;
-    glGetProgramiv(m_buffer, GL_ACTIVE_ATTRIBUTES, &numActiveAttribs);
-    glGetProgramiv(m_buffer, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
-
-    GLint maxAttribNameLength = 0;
-    glGetProgramiv(m_buffer, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxAttribNameLength);
-    std::vector<GLchar> nameData(maxAttribNameLength);
-
-    for (int attrib = 0; attrib < numActiveAttribs; ++attrib)
-    {
-        GLint arraySize = 0;
-        GLenum type = 0;
-        GLsizei actualLength = 0;
-        glGetActiveAttrib(m_buffer, attrib, maxAttribNameLength, &actualLength, &arraySize, &type, &nameData[0]);
-        std::string name((char*)&nameData[0], actualLength);
-
-        std::cout << name << std::endl;
-    }
-    for (int attrib = 0; attrib < numActiveUniforms; ++attrib)
-    {
-        GLint arraySize = 0;
-        GLenum type = 0;
-        GLsizei actualLength = 0;
-        glGetActiveUniform(m_buffer, attrib, maxAttribNameLength, &actualLength, &arraySize, &type, &nameData[0]);
-        std::string name((char*)&nameData[0], actualLength);
-
-        std::cout << name << std::endl;
-    }
-    */
-    return std::string();
-}
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
@@ -352,4 +301,36 @@ int Shader::GetUniformLocation(const std::string& name)
 
     m_uniformLocationCache[name] = location;
     return location;
+}
+
+void Shader::Print()
+{
+    GLuint feedbackBufferId;
+    glGenBuffers(1, &feedbackBufferId);
+
+    // Bind the feedback buffer
+    glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, feedbackBufferId);
+    glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, sizeof(float), nullptr, GL_STATIC_READ);
+
+    // Start a transform feedback operation
+    glBeginTransformFeedback(GL_POINTS);
+
+    // Draw one point to trigger the shader program and write data to the feedback buffer
+    glDrawArrays(GL_POINTS, 0, 1);
+
+    // End the transform feedback operation
+    glEndTransformFeedback();
+
+    // Map the feedback buffer and retrieve the feedback data
+    float value;
+    void* feedbackData = glMapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, GL_READ_ONLY);
+    memcpy(&value, feedbackData, sizeof(float));
+    glUnmapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER);
+
+    // Print the feedback value
+    printf("Feedback value: %f\n", value);
+
+    // Clean up resources
+    glDeleteBuffers(1, &feedbackBufferId);
+
 }

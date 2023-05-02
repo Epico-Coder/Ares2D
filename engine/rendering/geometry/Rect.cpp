@@ -3,10 +3,10 @@
 Rect::Rect()
 {
 	// Only used for setting empty vectors
-	Vertex v1{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-	Vertex v2{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-	Vertex v3{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-	Vertex v4{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	Vertex v1{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+	Vertex v2{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+	Vertex v3{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+	Vertex v4{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 	for (Vertex vertex : {v1, v2, v3, v4})
 	{
@@ -17,7 +17,30 @@ Rect::Rect()
 		for (float f : vertex.TexCords)
 			m_vertices.push_back(f);
 		m_vertices.push_back(vertex.TexID);
-		m_vertices.push_back(vertex.TexIdx);
+	}
+
+	m_indices = { 0, 1, 2, 2, 3, 0 };
+}
+
+Rect::Rect(Position position, Color color, TextureUse texture_use)
+{
+	m_width = position.w;
+	m_height = position.h;
+
+	Vertex v1{ position.x - position.w / 2, position.y - position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[0].first, texture_use.m_tex_cords[0].second, texture_use.m_texture_id };
+	Vertex v2{ position.x + position.w / 2, position.y - position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[1].first, texture_use.m_tex_cords[1].second, texture_use.m_texture_id };
+	Vertex v3{ position.x + position.w / 2, position.y + position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[2].first, texture_use.m_tex_cords[2].second, texture_use.m_texture_id };
+	Vertex v4{ position.x - position.w / 2, position.y + position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[3].first, texture_use.m_tex_cords[3].second, texture_use.m_texture_id };
+
+	for (Vertex vertex : {v1, v2, v3, v4})
+	{
+		for (float f : vertex.Position)
+			m_vertices.push_back(f);
+		for (float f : vertex.mColor)
+			m_vertices.push_back(f);
+		for (float f : vertex.TexCords)
+			m_vertices.push_back(f);
+		m_vertices.push_back(vertex.TexID);
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
@@ -28,10 +51,10 @@ Rect::Rect(float x, float y, float width, float height, float TexID, float TexId
 	m_width = width;
 	m_height = height;
 
-	Vertex v1{ x - width / 2, y - height / 2, r, g, b, a, 0.0f, 1.0f, TexID, TexIdx };
-	Vertex v2{ x + width / 2, y - height / 2, r, g, b, a, 1.0f, 1.0f, TexID, TexIdx };
-	Vertex v3{ x + width / 2, y + height / 2, r, g, b, a, 1.0f, 0.0f, TexID, TexIdx };
-	Vertex v4{ x - width / 2, y + height / 2, r, g, b, a, 0.0f, 0.0f, TexID, TexIdx };
+	Vertex v1{ x - width / 2, y - height / 2, r, g, b, a, 0.0f, 0.0f, TexID };
+	Vertex v2{ x + width / 2, y - height / 2, r, g, b, a, 1.0f, 0.0f, TexID };
+	Vertex v3{ x + width / 2, y + height / 2, r, g, b, a, 1.0f, 1.0f, TexID };
+	Vertex v4{ x - width / 2, y + height / 2, r, g, b, a, 0.0f, 1.0f, TexID };
 
 	for (Vertex vertex : {v1, v2, v3, v4})
 	{
@@ -42,7 +65,6 @@ Rect::Rect(float x, float y, float width, float height, float TexID, float TexId
 		for (float f : vertex.TexCords)
 			m_vertices.push_back(f);
 		m_vertices.push_back(vertex.TexID);
-		m_vertices.push_back(vertex.TexIdx);
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
@@ -59,7 +81,6 @@ Rect::Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
 		for (float f : vertex.TexCords)
 			m_vertices.push_back(f);
 		m_vertices.push_back(vertex.TexID);
-		m_vertices.push_back(vertex.TexIdx);
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
@@ -128,14 +149,6 @@ void Rect::SetTexID(unsigned int TexID)
 	for (int i = 0; i < 4; i++)
 	{
 		m_vertices[8 + (vertex_num * i)] = TexID;
-	}
-}
-
-void Rect::SetTexIdx(unsigned int TexIdx)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		m_vertices[9 + (vertex_num * i)] = TexIdx;
 	}
 }
 
