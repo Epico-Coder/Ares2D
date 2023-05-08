@@ -135,6 +135,14 @@ void ShaderHandler::SetUniform4f(int shaderID, const std::string& name, float v1
     }
 }
 
+void ShaderHandler::SetUniform4fv(int shaderID, const std::string& name, const glm::vec4& vec)
+{
+    auto shader = m_Shaders.find(shaderID);
+    if (shader != m_Shaders.end()) {
+        shader->second->SetUniform4fv(name, vec);
+    }
+}
+
 void ShaderHandler::SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix)
 {
     auto shader = m_Shaders.find(shaderID);
@@ -277,6 +285,11 @@ void Shader::SetUniform3f(const std::string& name, float v1, float v2, float v3)
 void Shader::SetUniform4f(const std::string& name, float v1, float v2, float v3, float v4)
 {
     glUniform4f(GetUniformLocation(name), v1, v2, v3, v4);
+}
+
+void Shader::SetUniform4fv(const std::string& name, const glm::vec4& vec)
+{
+    glUniform4fv(GetUniformLocation(name), 1, glm::value_ptr(vec));
 }
 
 void Shader::SetUniform4i(const std::string& name, int v1, int v2, int v3, int v4)

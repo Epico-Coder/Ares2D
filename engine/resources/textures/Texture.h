@@ -15,13 +15,13 @@ class Texture
 {
 public:
     Texture();
-    Texture(const std::string& filepath);
-    Texture(int width, int height, unsigned char* pixels);
+    Texture(GLenum sformat, GLenum dformat, const std::string& filepath);
+    Texture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* pixels);
     ~Texture();
 
-    void LoadData(unsigned char* data);
+    void LoadData(GLenum sformat, GLenum dformat, unsigned char* data);
 
-    void Bind();
+    void Bind(unsigned int slot=0);
     void Unbind();
 
     int GetWidth();
@@ -49,6 +49,9 @@ public:
     TextureAtlas(GLuint& buffer, int width, int height, int id);
     ~TextureAtlas();
 
+    bool PreAddTexture(int width, int height);
+    TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
+
     bool PreAddTexture(const std::string& filepath);
     TextureUse AddTexture(const std::string& filepath);
     
@@ -69,11 +72,11 @@ public:
     // Add first atlas
     void Init();
 
-    //void AddTexture(int width, int height, unsigned char* data, int texID);
-    //bool AddTexture(const std::string& filepath, int& textureID);
-
     // Add a texture to the last texture atlas
+    TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
     TextureUse AddTexture(const std::string& filepath);
+
+    TextureUse FullTexture(int textureID);
 
     //void RemoveTexture(int texID);
 

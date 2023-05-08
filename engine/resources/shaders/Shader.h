@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <map>
 #include "dependancies/glm/glm.hpp"
+#include "dependancies/glm/gtc/type_ptr.hpp"
 #include "engine/resources/shaders/shader_print.h"
 
 class Shader
@@ -26,6 +27,7 @@ public:
 	void SetUniform3f(const std::string& name, float v1, float v2, float v3);
 	void SetUniform4i(const std::string& name, int v1, int v2, int v3, int v4);
 	void SetUniform4f(const std::string& name, float v1, float v2, float v3, float v4);
+	void SetUniform4fv(const std::string& name, const glm::vec4& vec);
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
 	void Bind();
@@ -71,6 +73,7 @@ public:
 	void SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3);
 	void SetUniform4i(int shaderID, const std::string& name, int v1, int v2, int v3, int v4);
 	void SetUniform4f(int shaderID, const std::string& name, float v1, float v2, float v3, float v4);
+	void SetUniform4fv(int shaderID, const std::string& name, const glm::vec4& vec);
 	void SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix);
 
 	void PrintShader(int shaderID);

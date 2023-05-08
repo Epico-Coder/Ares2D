@@ -6,7 +6,7 @@ Texture::Texture()
 
 }
 
-Texture::Texture(const std::string& filepath)
+Texture::Texture(GLenum sformat, GLenum dformat, const std::string& filepath)
 	: m_width(0), m_height(0), m_buffer(0), m_is_loaded(false)
 {
 	stbi_set_flip_vertically_on_load(1);
@@ -19,15 +19,15 @@ Texture::Texture(const std::string& filepath)
 	}
 	else
 	{
-		LoadData(tex_data);
+		LoadData(sformat, dformat, tex_data);
 		stbi_image_free(tex_data);
 	}
 }
 
-Texture::Texture(int width, int height, unsigned char* pixels)
+Texture::Texture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* pixels)
 	: m_width(width), m_height(height), m_buffer(0), m_is_loaded(false)
 {
-	LoadData(pixels);
+	LoadData(sformat, dformat, pixels);
 }
 
 Texture::~Texture()
@@ -38,22 +38,23 @@ Texture::~Texture()
 	}
 }
 
-void Texture::LoadData(unsigned char* data)
+void Texture::LoadData(GLenum sformat, GLenum dformat, unsigned char* data)
 {
 	glGenTextures(1, &m_buffer);
 	glBindTexture(GL_TEXTURE_2D, m_buffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, sformat, m_width, m_height, 0, dformat, GL_UNSIGNED_BYTE, data);
+
 	m_is_loaded = true;
 }
 
-void Texture::Bind()
+void Texture::Bind(unsigned int slot)
 {
 	glBindTexture(GL_TEXTURE_2D, m_buffer);
 }
@@ -88,6 +89,45 @@ TextureAtlas::~TextureAtlas()
 	glDeleteTextures(1, &m_buffer);
 }
 
+bool TextureAtlas::PreAddTexture(int width, int height)
+{
+	// Cannot exceed further in x direction and y direction
+	return (!((m_xoffset + width >= m_width) && (m_yoffset + height >= m_height)));
+}
+
+TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
+{
+	// Cannot exceed further in x direction
+	if (m_xoffset + width >= m_width)
+	{
+		// Creates new row
+		m_xoffset = 0.0f;
+		m_yoffset += m_max_height_in_row;
+		m_max_height_in_row = height;
+	}
+	// Can exceed in x direction
+	else
+	{
+		if (height > m_max_height_in_row)
+		{
+			m_max_height_in_row = height;
+		}
+	}
+
+	glBindTexture(GL_TEXTURE_2D_ARRAY, m_buffer);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, m_xoffset, m_yoffset, m_ID, width, height, 1, dformat, GL_UNSIGNED_BYTE, data);
+
+	m_xoffset += width;
+
+	std::vector<std::pair<float, float>> outTextureCords{ {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f} };
+	outTextureCords[0].first = (m_xoffset - width) / m_width; outTextureCords[0].second = 1.0f - ((m_yoffset + height) / m_height);
+	outTextureCords[1].first = (m_xoffset) / m_width; outTextureCords[1].second = 1.0f - ((m_yoffset + height) / m_height);
+	outTextureCords[2].first = (m_xoffset) / m_width; outTextureCords[2].second = 1.0f - ((m_yoffset) / m_height);
+	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1.0f - ((m_yoffset) / m_height);
+
+	return TextureUse{ outTextureCords, m_ID };
+}
+
 bool TextureAtlas::PreAddTexture(const std::string& filepath)
 {
 	int width, height, channels;
@@ -99,17 +139,10 @@ bool TextureAtlas::PreAddTexture(const std::string& filepath)
 		std::cout << "Failed to load texture file " << filepath << std::endl;
 		return false;
 	}
+	// Checks if space is available
 	else
 	{
-		// Cannot exceed further in x direction
-		if ((m_xoffset + width >= m_width) and (m_yoffset + height >= m_height))
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return PreAddTexture(width, height);
 	}
 }
 
@@ -179,17 +212,34 @@ void TextureHandler::Init()
 {
 	glGenTextures(1, &m_buffer);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_buffer);
-	
-	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_BGRA, m_atlas_width, m_atlas_height, 500, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-	
-	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-	
+		
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_BGRA, m_atlas_width, m_atlas_height, 500, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
 	m_textureAtlases.push_back(new TextureAtlas(m_buffer, m_atlas_width, m_atlas_height, m_textureAtlases.size()+1));
+}
+
+TextureUse TextureHandler::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
+{
+	// Add a texture
+	if (!m_textureAtlases.back()->PreAddTexture(width, height))
+	{
+		// If returns false, add new atlas
+		m_textureAtlases.push_back(new TextureAtlas(m_buffer, m_atlas_width, m_atlas_height, m_textureAtlases.size() + 1));
+	}
+
+	return m_textureAtlases.back()->AddTexture(sformat, dformat, width, height, data);
 }
 
 TextureUse TextureHandler::AddTexture(const std::string& filepath)
@@ -202,6 +252,18 @@ TextureUse TextureHandler::AddTexture(const std::string& filepath)
 	}
 
 	return m_textureAtlases.back()->AddTexture(filepath);
+}
+
+TextureUse TextureHandler::FullTexture(int textureID)
+{
+	std::vector<std::pair<float, float>> outTextureCords{ {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f} };
+
+	outTextureCords[0].first = 0.0f; outTextureCords[0].second = 0.0f;
+	outTextureCords[1].first = 1.0f; outTextureCords[1].second = 0.0f;
+	outTextureCords[2].first = 1.0f; outTextureCords[2].second = 1.0f;
+	outTextureCords[3].first = 0.0f; outTextureCords[3].second = 1.0f;
+
+	return TextureUse{ outTextureCords, textureID };
 }
 
 void TextureHandler::BindTexture(int textureID)

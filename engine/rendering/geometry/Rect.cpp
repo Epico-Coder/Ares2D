@@ -27,10 +27,10 @@ Rect::Rect(Position position, Color color, TextureUse texture_use)
 	m_width = position.w;
 	m_height = position.h;
 
-	Vertex v1{ position.x - position.w / 2, position.y - position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[0].first, texture_use.m_tex_cords[0].second, texture_use.m_texture_id };
-	Vertex v2{ position.x + position.w / 2, position.y - position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[1].first, texture_use.m_tex_cords[1].second, texture_use.m_texture_id };
-	Vertex v3{ position.x + position.w / 2, position.y + position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[2].first, texture_use.m_tex_cords[2].second, texture_use.m_texture_id };
-	Vertex v4{ position.x - position.w / 2, position.y + position.h / 2, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[3].first, texture_use.m_tex_cords[3].second, texture_use.m_texture_id };
+	Vertex v1{ position.x			  , position.y			   , color.r, color.g, color.b, color.a, texture_use.m_tex_cords[0].first, texture_use.m_tex_cords[0].second, texture_use.m_texture_id };
+	Vertex v2{ position.x + position.w, position.y			   , color.r, color.g, color.b, color.a, texture_use.m_tex_cords[1].first, texture_use.m_tex_cords[1].second, texture_use.m_texture_id };
+	Vertex v3{ position.x + position.w, position.y + position.h, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[2].first, texture_use.m_tex_cords[2].second, texture_use.m_texture_id };
+	Vertex v4{ position.x			  , position.y + position.h, color.r, color.g, color.b, color.a, texture_use.m_tex_cords[3].first, texture_use.m_tex_cords[3].second, texture_use.m_texture_id };
 
 	for (Vertex vertex : {v1, v2, v3, v4})
 	{
@@ -46,15 +46,39 @@ Rect::Rect(Position position, Color color, TextureUse texture_use)
 	m_indices = { 0, 1, 2, 2, 3, 0 };
 }
 
-Rect::Rect(float x, float y, float width, float height, float TexID, float TexIdx, float r, float g, float b, float a)
+Rect::Rect(Position position, Color color, float TexID)
+{
+	m_width = position.w;
+	m_height = position.h;
+
+	Vertex v1{ position.x			  , position.y			   , color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
+	Vertex v2{ position.x + position.w, position.y			   , color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
+	Vertex v3{ position.x + position.w, position.y + position.h, color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
+	Vertex v4{ position.x			  , position.y + position.h, color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
+
+	for (Vertex vertex : {v1, v2, v3, v4})
+	{
+		for (float f : vertex.Position)
+			m_vertices.push_back(f);
+		for (float f : vertex.mColor)
+			m_vertices.push_back(f);
+		for (float f : vertex.TexCords)
+			m_vertices.push_back(f);
+		m_vertices.push_back(vertex.TexID);
+	}
+
+	m_indices = { 0, 1, 2, 2, 3, 0 };
+}
+
+Rect::Rect(float x, float y, float width, float height, float r, float g, float b, float a, float TexID)
 {
 	m_width = width;
 	m_height = height;
 
-	Vertex v1{ x - width / 2, y - height / 2, r, g, b, a, 0.0f, 0.0f, TexID };
-	Vertex v2{ x + width / 2, y - height / 2, r, g, b, a, 1.0f, 0.0f, TexID };
-	Vertex v3{ x + width / 2, y + height / 2, r, g, b, a, 1.0f, 1.0f, TexID };
-	Vertex v4{ x - width / 2, y + height / 2, r, g, b, a, 0.0f, 1.0f, TexID };
+	Vertex v1{ x	    , y			, r, g, b, a, 0.0f, 0.0f, TexID };
+	Vertex v2{ x + width, y			, r, g, b, a, 1.0f, 0.0f, TexID };
+	Vertex v3{ x + width, y + height, r, g, b, a, 1.0f, 1.0f, TexID };
+	Vertex v4{ x		, y + height, r, g, b, a, 0.0f, 1.0f, TexID };
 
 	for (Vertex vertex : {v1, v2, v3, v4})
 	{
@@ -88,6 +112,11 @@ Rect::Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
 
 Rect::~Rect()
 {
+}
+
+void Rect::Draw(Renderer& renderer)
+{
+	renderer.AddRenderable(*this);
 }
 
 void Rect::Draw(Renderer& renderer, int x, int y)

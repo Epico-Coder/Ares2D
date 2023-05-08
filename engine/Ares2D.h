@@ -24,8 +24,9 @@
 #include "engine/rendering/geometry/Polygon.h"
 
 #include "engine/resources/shaders/Shader.h"
-
 #include "engine/resources/textures/Texture.h"
+
+#include "engine/resources/resource/Resource.h"
 
 #include "engine/utils/input/Input.h"
 #include "engine/utils/ui/UI.h"
@@ -58,12 +59,13 @@ namespace Ares2D
     // Rendering
     static AudioHandler AUDIO;
     static ShaderHandler SHADER;
-    static TextureHandler TEXTURE(300, 300);
+    static TextureHandler TEXTURE(1000, 1000);
+    static ResourceHandler RESOURCE;
     // static ImageHandler IMAGE;
     static VFXHandler VFX(&RENDERER, &TEXTURE);
      
     // Help
-    static UI USER;
+    static UI USER(&RENDERER);
     // static PhysicsHandler PHYSICS;
     // static Time CLOCK;
     // static Math MATH;

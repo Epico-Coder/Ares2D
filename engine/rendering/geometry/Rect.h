@@ -10,10 +10,12 @@ class Rect : public Geometry
 public:
 	Rect();
 	Rect(Position position, Color color, TextureUse texture_use);
-	Rect(float x, float y, float width, float height, float TexID = 0.0f, float TexIdx = 0.0f, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f);
+	Rect(Position position, Color color, float TexID = 0.0f);
+	Rect(float x, float y, float width, float height, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f, float TexID = 0.0f);
 	Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4);
 	~Rect();
 
+	void Draw(Renderer& renderer);
 	void Draw(Renderer& renderer, int x, int y);
 
 	void SetPos(int x, int y);
