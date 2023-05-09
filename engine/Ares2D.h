@@ -52,20 +52,19 @@
 namespace Ares2D
 {   
     // Main
-    static Window WINDOW;
-    static Renderer RENDERER;
-    static Input INPUT;
+    static Window WIN;
+    static Renderer RENDER;
+    static InputHandler USERINPUT;
 
     // Rendering
     static AudioHandler AUDIO;
-    static ShaderHandler SHADER;
-    static TextureHandler TEXTURE(1000, 1000);
+
     static ResourceHandler RESOURCE;
     // static ImageHandler IMAGE;
-    static VFXHandler VFX(&RENDERER, &TEXTURE);
+    static VFXHandler VFX(&RENDER);
      
     // Help
-    static UI USER(&RENDERER);
+    static UI USER(&RENDER);
     // static PhysicsHandler PHYSICS;
     // static Time CLOCK;
     // static Math MATH;
@@ -74,15 +73,14 @@ namespace Ares2D
     {
         if (!glfwInit())
             std::cout << "Error 1 while Initialization" << std::endl;
-        if (!WINDOW.Init(width, height, title))
+        if (!WIN.Init(width, height, title))
             std::cout << "Error 3 while Initialization" << std::endl;
         if (glewInit() != GLEW_OK)
             std::cout << "Error 2 while Initialization" << std::endl;
 
-        RENDERER.Init(1000);
-        INPUT.Init(WINDOW.GetWindow());
-        TEXTURE.Init();
+        RENDER.Init(1000);
+        USERINPUT.Init(WIN.GetWindow());
 
-        return Control(&WINDOW, &RENDERER);
+        return Control(&WIN, &RENDER);
     }
 }

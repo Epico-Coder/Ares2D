@@ -16,7 +16,7 @@
 class VFXHandler
 {
 public:
-	VFXHandler(Renderer* renderer, TextureHandler* texture_handler);
+	VFXHandler(Renderer* renderer);
 	~VFXHandler();
 
 	void AddVFX(const std::string& vert_filepath, const std::string& frag_filepath, int VFXID);
@@ -55,6 +55,6 @@ private:
 	std::unordered_map<int, VFX*>m_VFXs;
 
 	Renderer* m_renderer;
-	TextureHandler* m_texture_handler;
+	//TextureHandler* m_texture_handler;
 };
 

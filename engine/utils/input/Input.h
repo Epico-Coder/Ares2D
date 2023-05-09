@@ -6,10 +6,10 @@
 #include <vector>
 #include <string>
 
-class Input {
+class InputHandler {
 public:
-	Input();
-	~Input();
+	InputHandler();
+	~InputHandler();
 
 	void Init(GLFWwindow* window);
 
@@ -26,7 +26,7 @@ public:
 	bool getIsEnabled() { return m_isEnabled; }
 	void setIsEnabled(bool value) { m_isEnabled = value; }
 private:
-	static std::vector<Input*> m_instances;
+	static std::vector<InputHandler*> m_instances;
 	bool m_isEnabled;
 
 	std::map<int, bool> m_keys;

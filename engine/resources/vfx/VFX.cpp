@@ -1,7 +1,7 @@
 #include "VFX.h"
 
-VFXHandler::VFXHandler(Renderer* renderer, TextureHandler* texture_handler)
-    : m_renderer(renderer), m_texture_handler(texture_handler)
+VFXHandler::VFXHandler(Renderer* renderer)
+    : m_renderer(renderer)
 {
 
 }

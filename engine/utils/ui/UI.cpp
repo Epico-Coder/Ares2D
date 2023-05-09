@@ -1,7 +1,7 @@
 #include "UI.h"
 #include <iostream>
 
-Font::Font(TextureHandler& texture_handler, const std::string& filepath, int size)
+Font::Font(ResourceHandler& resource_handler, const std::string& filepath, int size)
     : m_font_size(size)
 {
     FT_Library ft;
@@ -37,8 +37,8 @@ Font::Font(TextureHandler& texture_handler, const std::string& filepath, int siz
             continue;
         }
 
-        TextureUse texture_use = texture_handler.AddTexture(GL_ALPHA, GL_ALPHA, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
-
+        //TextureUse texture_use = texture_handler.AddTexture(GL_ALPHA, GL_ALPHA, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
+        TextureUse texture_use;
         Character character = 
         {
             texture_use,
@@ -80,7 +80,7 @@ void UI::Init()
     m_shader.Unbind();
 }
 
-void UI::RenderText(Renderer& renderer, Font font, const std::string& text, float x, float y, Color text_color, float scale, float ln_width, float ln_height)
+void UI::RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale, float ln_width, float ln_height)
 {
     float currentX = x;
     float currentY = y;
@@ -104,7 +104,7 @@ void UI::RenderText(Renderer& renderer, Font font, const std::string& text, floa
 
         // Render glyph texture over quad
         Rect fuck(Position{ xpos,ypos,w,h }, text_color, ch.texture_use);
-        fuck.Draw(renderer);
+        fuck.Draw(*m_renderer);
 
         // Move to the next character position
         currentX += ((ch.Advance >> 6) * scale) + ln_width;

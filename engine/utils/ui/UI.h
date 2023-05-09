@@ -6,6 +6,8 @@
 #include "engine/resources/shaders/Shader.h"
 #include "engine/resources/textures/Texture.h"
 
+#include "engine/resources/resource/Resource.h"
+
 #include "engine/rendering/geometry/Rect.h"
 
 #include "engine/utils/math/Math.h"
@@ -24,7 +26,7 @@ class Font
 {
     friend class UI;
 public:
-    Font(TextureHandler& texture_handler, const std::string& filepath, int size);
+    Font(ResourceHandler& reource_handler, const std::string& filepath, int size);
     ~Font();
 protected:
     std::map<char, Character> m_characters;
@@ -39,7 +41,7 @@ public:
 
     void Init();
 
-    void RenderText(Renderer& renderer, Font font, const std::string& text, float x, float y, Color text_color, float scale=1.0f, float ln_width=1, float ln_height=1);
+    void RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale=1.0f, float ln_width=1, float ln_height=1);
 
 private:
     Renderer* m_renderer;

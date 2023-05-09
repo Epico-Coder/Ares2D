@@ -95,7 +95,7 @@ bool TextureAtlas::PreAddTexture(int width, int height)
 	return (!((m_xoffset + width >= m_width) && (m_yoffset + height >= m_height)));
 }
 
-TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
+TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data, const std::string& th_name)
 {
 	// Cannot exceed further in x direction
 	if (m_xoffset + width >= m_width)
@@ -125,7 +125,7 @@ TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, i
 	outTextureCords[2].first = (m_xoffset) / m_width; outTextureCords[2].second = 1.0f - ((m_yoffset) / m_height);
 	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1.0f - ((m_yoffset) / m_height);
 
-	return TextureUse{ outTextureCords, m_ID };
+	return TextureUse{ outTextureCords, m_ID, th_name };
 }
 
 bool TextureAtlas::PreAddTexture(const std::string& filepath)
@@ -146,13 +146,13 @@ bool TextureAtlas::PreAddTexture(const std::string& filepath)
 	}
 }
 
-TextureUse TextureAtlas::AddTexture(const std::string& filepath)
+TextureUse TextureAtlas::AddTexture(const std::string& filepath, const std::string& th_name)
 {
 	int width, height, channels;
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 
 	// Cannot exceed further in x direction
-	if (m_xoffset + width >= m_width)
+	if (m_xoffset + width > m_width)
 	{
 		// Creates new row
 		m_xoffset = 0.0f;
@@ -182,7 +182,7 @@ TextureUse TextureAtlas::AddTexture(const std::string& filepath)
 	outTextureCords[2].first = (m_xoffset        ) / m_width; outTextureCords[2].second = 1.0f - ((m_yoffset		 ) / m_height);
 	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1.0f - ((m_yoffset		 ) / m_height);
 
-	return TextureUse{ outTextureCords, m_ID };
+	return TextureUse{ outTextureCords, m_ID, th_name };
 }
 
 void TextureAtlas::Bind()
@@ -195,8 +195,8 @@ int TextureAtlas::GetID()
 	return m_ID;
 }
 
-TextureHandler::TextureHandler(int width, int height)
-	: m_atlas_width(width), m_atlas_height(height), m_buffer(0)
+TextureHandler::TextureHandler(int width, int height, const std::string& name)
+	: m_atlas_width(width), m_atlas_height(height), m_buffer(0), m_name(name)
 {
 }
 
@@ -239,7 +239,7 @@ TextureUse TextureHandler::AddTexture(GLenum sformat, GLenum dformat, int width,
 		m_textureAtlases.push_back(new TextureAtlas(m_buffer, m_atlas_width, m_atlas_height, m_textureAtlases.size() + 1));
 	}
 
-	return m_textureAtlases.back()->AddTexture(sformat, dformat, width, height, data);
+	return m_textureAtlases.back()->AddTexture(sformat, dformat, width, height, data, m_name);
 }
 
 TextureUse TextureHandler::AddTexture(const std::string& filepath)
@@ -251,7 +251,7 @@ TextureUse TextureHandler::AddTexture(const std::string& filepath)
 		m_textureAtlases.push_back(new TextureAtlas(m_buffer, m_atlas_width, m_atlas_height, m_textureAtlases.size() + 1));
 	}
 
-	return m_textureAtlases.back()->AddTexture(filepath);
+	return m_textureAtlases.back()->AddTexture(filepath, m_name);
 }
 
 TextureUse TextureHandler::FullTexture(int textureID)
@@ -266,7 +266,7 @@ TextureUse TextureHandler::FullTexture(int textureID)
 	return TextureUse{ outTextureCords, textureID };
 }
 
-void TextureHandler::BindTexture(int textureID)
+void TextureHandler::Bind()
 {
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_buffer);
 }

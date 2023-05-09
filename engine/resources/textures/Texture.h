@@ -41,6 +41,7 @@ struct TextureUse
 {
     std::vector<std::pair<float, float>> m_tex_cords;
     int m_texture_id;
+    std::string th_name;
 };
 
 class TextureAtlas
@@ -50,10 +51,10 @@ public:
     ~TextureAtlas();
 
     bool PreAddTexture(int width, int height);
-    TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
+    TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data, const std::string& th_name);
 
     bool PreAddTexture(const std::string& filepath);
-    TextureUse AddTexture(const std::string& filepath);
+    TextureUse AddTexture(const std::string& filepath, const std::string& th_name);
     
     void Bind();
     int GetID();
@@ -66,7 +67,7 @@ private:
 
 class TextureHandler {
 public:
-    TextureHandler(int width, int height);
+    TextureHandler(int width, int height, const std::string& name);
     ~TextureHandler();
 
     // Add first atlas
@@ -80,10 +81,12 @@ public:
 
     //void RemoveTexture(int texID);
 
-    void BindTexture(int textureID);
+    void Bind();
 private:
     GLuint m_buffer;
 
     std::vector<TextureAtlas*> m_textureAtlases;
     float m_atlas_width, m_atlas_height;
+
+    std::string m_name;
 };
