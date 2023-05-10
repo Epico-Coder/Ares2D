@@ -18,7 +18,6 @@ void main()
     else
     {
         vec4 tex_color = texture(u_TexArray, vec3(v_TexCords, id));
-        o_Color = vec4(vec3(1.0, 0.0, 0.0), tex_color.a);
-        //o_Color = tex_color;
+        o_Color = tex_color;
     }
 }

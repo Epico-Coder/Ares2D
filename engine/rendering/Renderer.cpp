@@ -63,6 +63,7 @@ void Renderer::Update()
 
 void Renderer::Draw()
 {
+	Update();
 	for (int i = 0; i < m_Batches.size(); i++)
 	{
 		m_Batches[i]->Draw();
@@ -126,6 +127,7 @@ void Renderer::Batch::Update()
 
 void Renderer::Batch::Draw()
 {
+	//Update();
 	m_vao.Bind();
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);

@@ -2,7 +2,7 @@
 #include <iostream>
 
 Font::Font(ResourceHandler& resource_handler, const std::string& filepath, int size)
-    : m_font_size(size)
+    : m_font_size(size), m_filepath(filepath)
 {
     FT_Library ft;
     if (FT_Init_FreeType(&ft))
@@ -37,8 +37,8 @@ Font::Font(ResourceHandler& resource_handler, const std::string& filepath, int s
             continue;
         }
 
-        //TextureUse texture_use = texture_handler.AddTexture(GL_ALPHA, GL_ALPHA, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
-        TextureUse texture_use;
+        TextureUse texture_use = resource_handler.AddTexture(resource_name, GL_ALPHA, GL_ALPHA, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap.buffer);
+        
         Character character = 
         {
             texture_use,
@@ -49,6 +49,7 @@ Font::Font(ResourceHandler& resource_handler, const std::string& filepath, int s
         m_characters.insert(std::pair<char, Character>(c, character));
     }
 
+    // Back to default
    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     FT_Done_Face(face);
@@ -59,8 +60,13 @@ Font::~Font()
 {
 }
 
-UI::UI(Renderer* renderer)
-    : m_renderer(renderer)
+std::string Font::GetFilepath()
+{
+    return m_filepath;
+}
+
+UI::UI(Renderer* renderer, ResourceHandler* resource_handler)
+    : m_renderer(renderer), m_rh(resource_handler)
 {
 }
 
@@ -71,17 +77,22 @@ UI::~UI()
 
 void UI::Init()
 {
-    m_shader.AddVertexShader("engine/utils/ui/UIVertexShader.shader");
-    m_shader.AddFragmentShader("engine/utils/ui/UIFragmentShader.shader");
-    m_shader.Create();
-    m_shader.Bind();
+    m_rh->AddResource(resource_name, 600, 600);
+    m_rh->AddShader(resource_name, "engine/utils/ui/shaders/vert_ui.shader", "engine/utils/ui/shaders/frag_ui.shader", 1);
+    m_rh->BindResource(resource_name, 1);
+    m_rh->SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
+}
 
-    m_shader.SetUniformMat4f("u_projection", m_projection);
-    m_shader.Unbind();
+std::string UI::GetResourceID()
+{
+    return resource_name;
 }
 
 void UI::RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale, float ln_width, float ln_height)
 {
+    m_rh->BindResource(resource_name, 1);
+    m_rh->SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
+        
     float currentX = x;
     float currentY = y;
     float lineHeight = ((font.m_font_size/24) * scale * 20.0f) + (scale * ln_height * 10.0f);
@@ -104,9 +115,11 @@ void UI::RenderText(Font& font, const std::string& text, float x, float y, Color
 
         // Render glyph texture over quad
         Rect fuck(Position{ xpos,ypos,w,h }, text_color, ch.texture_use);
-        fuck.Draw(*m_renderer);
+        fuck.Add(*m_renderer);
 
         // Move to the next character position
         currentX += ((ch.Advance >> 6) * scale) + ln_width;
     }
+
+    m_renderer->Draw();
 }

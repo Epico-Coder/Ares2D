@@ -2,6 +2,8 @@
 
 #include "dependancies/glew/include/GL/glew.h"
 
+#include "engine/rendering/Renderer.h"
+
 #include "engine/resources/shaders/Shader.h"
 #include "engine/resources/textures/Texture.h"
 
@@ -10,6 +12,7 @@
 
 class Resource
 {
+	friend class ResourceHandler;
 public:
 	Resource(const std::string& name, int tex_width=1280, int tex_height=720);
 	~Resource();
@@ -42,7 +45,7 @@ private:
 class ResourceHandler
 {
 public:
-	ResourceHandler();
+	ResourceHandler(Renderer* renderer);
 	~ResourceHandler();
 
 	void AddResource(const std::string& resourceID, int tex_width, int tex_height);
@@ -68,5 +71,7 @@ public:
 	void SetUniformMat4f( const std::string& resourceID, int shaderID, const std::string& name, const glm::mat4& matrix                );
 private:
 	std::unordered_map<std::string, Resource*> m_resources;
+
+	Renderer* m_renderer;
 };
 

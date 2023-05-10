@@ -11,7 +11,7 @@ class Geometry : public Renderable
 {
 	friend class Renderer;
 public:
-	virtual void Draw(Renderer& renderer, int x, int y) {}
+	virtual void Add(Renderer& renderer, int x, int y) {}
 
 	virtual void SetColor(Color color) {}
 	virtual void SetGradient(Color color) {}

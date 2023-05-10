@@ -6,11 +6,12 @@ using namespace Ares2D;
 
 void reDrawTileset(Renderer& renderer)
 {
-    
+    // TODO   
 }
 
 void reDraw(Renderer& renderer)
 {
+    // TODO
     reDrawTileset(renderer);
 }
 
@@ -25,8 +26,6 @@ int main()
 
     WIN.SetBlending(true);
 
-    USER.Init();
-
     AUDIO.add("sandbox/examples/example_main/audio/giorno.mp3", 1);
     //AUDIO.play(1);
 
@@ -35,7 +34,7 @@ int main()
     /*-------------------------------------------------------------*/
 
     RESOURCE.AddResource("grass", 64, 64);
-    RESOURCE.AddShader("grass", "sandbox/examples/example_main/shaders/grass/grass.vert", "sandbox/examples/example_main/shaders/grass/grass.frag", 1);
+    RESOURCE.AddShader("grass", "sandbox/examples/example_main/shaders/grass/vert_grass.shader", "sandbox/examples/example_main/shaders/grass/frag_grass.shader", 1);
     TextureUse tgrass_1 = RESOURCE.AddTexture("grass", "engine/resources/images/nature_tileset/tile000.png");
     TextureUse tgrass_2 = RESOURCE.AddTexture("grass", "engine/resources/images/nature_tileset/tile001.png");
     TextureUse tgrass_3 = RESOURCE.AddTexture("grass", "engine/resources/images/nature_tileset/tile002.png");
@@ -53,7 +52,7 @@ int main()
     /*-------------------------------------------------------------*/
 
     RESOURCE.AddResource("potion", 64, 64);
-    RESOURCE.AddShader("potion", "sandbox/examples/example_main/shaders/potion/potion.vert", "sandbox/examples/example_main/shaders/potion/potion.frag", 1);
+    RESOURCE.AddShader("potion", "sandbox/examples/example_main/shaders/potion/vert_potion.shader", "sandbox/examples/example_main/shaders/potion/frag_potion.shader", 1);
     TextureUse tpotion_1 = RESOURCE.AddTexture("potion", "engine/resources/images/nature_tileset/tile063.png");
     TextureUse tpotion_2 = RESOURCE.AddTexture("potion", "engine/resources/images/nature_tileset/tile064.png");
     TextureUse tpotion_3 = RESOURCE.AddTexture("potion", "engine/resources/images/nature_tileset/tile070.png");
@@ -70,8 +69,11 @@ int main()
     
     Rect square_red(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, Color{255.0f, 0.0f, 0.0f, 255.0f});
 
-    //Font arial(RESOURCE, "engine/utils/ui/fonts/arial.ttf", 48);
-    //Font boh(RESOURCE, "engine/utils/ui/fonts/boh.ttf", 48);
+    Font arial(RESOURCE, "engine/utils/ui/fonts/arial.ttf", 48);
+    Font boh(RESOURCE, "engine/utils/ui/fonts/boh.ttf", 48);
+
+    TextureUse tfont_f = RESOURCE.FullTexture(USER.GetResourceID(), 1);
+    Rect rfont_f(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, ARES_NO_COLOR, tfont_f);
 
     // Main Loop
     while (WIN.WindowOpen())
@@ -85,46 +87,44 @@ int main()
         WIN.Clear(Color{ 0.0f, 153.0f, 219.0f, 1.0f });
         RENDER.Clear();
 
-        // Bind resource with its first shader
-
-        RESOURCE.BindResource("grass", 1);
-        RESOURCE.BindResource("potion", 1);
-
-        reDraw(RENDER);
-        
-        // Draw rect dynamically
-        if (USERINPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
-        {   
-            rgrass_1.Draw(RENDER, float(USERINPUT.getMousePos()[0]), float(USERINPUT.getMousePos()[1]));
-        }
-        
-        else if (USERINPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
-        {
-            rpotion_f.Draw(RENDER, float(USERINPUT.getMousePos()[0]), float(USERINPUT.getMousePos()[1]));
-        }
-
         // Convert range of position vector from -1 to 1, to normal
         glm::mat4 view = glm::ortho(0.0f, float(WIN.getWidth()), 0.0f, float(WIN.getHeight()), -1.0f, 1.0f);
         glm::mat4 mvp = view;
 
+        RESOURCE.BindResource("grass", 1);
         RESOURCE.SetUniformMat4f("grass", 1, "u_MVP", mvp);
+
+        RESOURCE.BindResource("potion", 1);
         RESOURCE.SetUniformMat4f("potion", 1, "u_MVP", mvp);
 
-        //USER.RenderText(RENDER, arial, "Holy hell ! ! !\nnew line ?", 100, 250, Color{ 1.0f, 0.8f, 0.0f, 0.8f });
-        //USER.RenderText(RENDER, boh, "Holy hell ! ! !\nnew line ?", 500, 250, Color{ 0.0f, 0.8f, 1.0f, 0.8f });
+        // Draw rect dynamically
+        if (USERINPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+        {   
+            RESOURCE.BindResource("grass", 1);
 
-        // Update ReDraw
-        RENDER.Draw();
+            rgrass_1.Add(RENDER, float(USERINPUT.getMousePos()[0]), float(USERINPUT.getMousePos()[1]));
+
+            RENDER.Draw();
+        }
         
+        else if (USERINPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            RESOURCE.BindResource("potion", 1);
+
+            rpotion_1.Add(RENDER, float(USERINPUT.getMousePos()[0]), float(USERINPUT.getMousePos()[1]));
+
+            RENDER.Draw();
+        }
+
+        USER.RenderText(arial, "Holy hell ! ! !\nnew line ?", 100, 250, Color{ 1.0f, 0.8f, 0.0f, 0.8f });
+        USER.RenderText(boh, "Holy hell ! ! !\nnew line ?", 500, 250, Color{ 0.0f, 0.8f, 1.0f, 0.6f });
+
         /*-------------------------------------------------------------*/
 
         //VFX.End(1);
         
         // Swap buffers and OS/User events
         WIN.Update();
-        // Update Logic
-        RENDER.Update();
-        
     }
 
     // Terminate after loop over

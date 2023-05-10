@@ -15,6 +15,8 @@
 
 #include "dependancies/glm/gtc/matrix_transform.hpp"
 
+const std::string resource_name = "__ui";
+
 struct Character {
     TextureUse texture_use;  // Texture
     glm::ivec2   Size;       // Size of glyph
@@ -28,23 +30,30 @@ class Font
 public:
     Font(ResourceHandler& reource_handler, const std::string& filepath, int size);
     ~Font();
+
+    std::string GetFilepath();
 protected:
     std::map<char, Character> m_characters;
+
     int m_font_size;
+    std::string m_filepath;
 };
 
 class UI : public Renderable
 {
 public:
-    UI(Renderer* renderer);
+    UI(Renderer* renderer, ResourceHandler* resource_handler);
 	~UI();
 
     void Init();
+
+    std::string GetResourceID();
 
     void RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale=1.0f, float ln_width=1, float ln_height=1);
 
 private:
     Renderer* m_renderer;
+    ResourceHandler* m_rh;
 
     Shader m_shader;
     glm::mat4 m_projection = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);

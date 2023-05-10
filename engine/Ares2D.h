@@ -59,12 +59,12 @@ namespace Ares2D
     // Rendering
     static AudioHandler AUDIO;
 
-    static ResourceHandler RESOURCE;
+    static ResourceHandler RESOURCE(&RENDER);
     // static ImageHandler IMAGE;
     static VFXHandler VFX(&RENDER);
      
     // Help
-    static UI USER(&RENDER);
+    static UI USER(&RENDER, &RESOURCE);
     // static PhysicsHandler PHYSICS;
     // static Time CLOCK;
     // static Math MATH;
@@ -80,6 +80,7 @@ namespace Ares2D
 
         RENDER.Init(1000);
         USERINPUT.Init(WIN.GetWindow());
+        USER.Init();
 
         return Control(&WIN, &RENDER);
     }

@@ -85,7 +85,8 @@ void Resource::SetUniformMat4f(int shaderID, const std::string& name, const glm:
 	m_sh.SetUniformMat4f(shaderID, name, matrix);
 }
 
-ResourceHandler::ResourceHandler()
+ResourceHandler::ResourceHandler(Renderer* renderer)
+	: m_renderer(renderer)
 {
 }
 
@@ -153,6 +154,7 @@ void ResourceHandler::BindResource(const std::string& resourceID, int shaderID)
 	auto it = m_resources.find(resourceID);
 	if (it != m_resources.end())
 	{
+		m_renderer->Clear();
 		it->second->BindShader(shaderID);
 		it->second->BindTexture();
 	}

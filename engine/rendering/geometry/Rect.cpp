@@ -114,12 +114,12 @@ Rect::~Rect()
 {
 }
 
-void Rect::Draw(Renderer& renderer)
+void Rect::Add(Renderer& renderer)
 {
 	renderer.AddRenderable(*this);
 }
 
-void Rect::Draw(Renderer& renderer, int x, int y)
+void Rect::Add(Renderer& renderer, int x, int y)
 {
 	SetPos(x, y);
 	renderer.AddRenderable(*this);

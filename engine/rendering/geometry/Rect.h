@@ -15,8 +15,8 @@ public:
 	Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4);
 	~Rect();
 
-	void Draw(Renderer& renderer);
-	void Draw(Renderer& renderer, int x, int y);
+	void Add(Renderer& renderer);
+	void Add(Renderer& renderer, int x, int y);
 
 	void SetPos(int x, int y);
 	void SetColor(Color color);
