@@ -61,7 +61,8 @@ namespace Ares2D
 
     static ResourceHandler RESOURCE(&RENDER);
     // static ImageHandler IMAGE;
-    static VFXHandler VFX(&RENDER);
+    //static VFXHandler VFX(&RENDER, &RESOURCE);
+    static VFXHandler ARES_VFX(1280.0f, 720.0f);
      
     // Help
     static UI USER(&RENDER, &RESOURCE);

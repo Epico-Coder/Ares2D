@@ -19,7 +19,7 @@ public:
     Texture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* pixels);
     ~Texture();
 
-    void LoadData(GLenum sformat, GLenum dformat, unsigned char* data);
+    void LoadData(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
 
     void Bind(unsigned int slot=0);
     void Unbind();
@@ -58,6 +58,8 @@ public:
     
     void Bind();
     int GetID();
+
+    GLuint GetBuffer();
 private:
     GLuint m_buffer;
     float m_width, m_height;

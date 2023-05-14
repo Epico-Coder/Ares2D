@@ -19,7 +19,7 @@ Texture::Texture(GLenum sformat, GLenum dformat, const std::string& filepath)
 	}
 	else
 	{
-		LoadData(sformat, dformat, tex_data);
+		LoadData(sformat, dformat, m_width, m_height, tex_data);
 		stbi_image_free(tex_data);
 	}
 }
@@ -27,7 +27,7 @@ Texture::Texture(GLenum sformat, GLenum dformat, const std::string& filepath)
 Texture::Texture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* pixels)
 	: m_width(width), m_height(height), m_buffer(0), m_is_loaded(false)
 {
-	LoadData(sformat, dformat, pixels);
+	LoadData(sformat, dformat, m_width, m_height, pixels);
 }
 
 Texture::~Texture()
@@ -38,8 +38,11 @@ Texture::~Texture()
 	}
 }
 
-void Texture::LoadData(GLenum sformat, GLenum dformat, unsigned char* data)
+void Texture::LoadData(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
 {
+	m_width = width;
+	m_height = height;
+
 	glGenTextures(1, &m_buffer);
 	glBindTexture(GL_TEXTURE_2D, m_buffer);
 
@@ -193,6 +196,11 @@ void TextureAtlas::Bind()
 int TextureAtlas::GetID()
 {
 	return m_ID;
+}
+
+GLuint TextureAtlas::GetBuffer()
+{
+	return m_buffer;
 }
 
 TextureHandler::TextureHandler(int width, int height, const std::string& name)

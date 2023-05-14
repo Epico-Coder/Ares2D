@@ -1,138 +1,181 @@
 #include "VFX.h"
 
-VFXHandler::VFXHandler(Renderer* renderer)
-    : m_renderer(renderer)
-{
+#include "vfx.h"
 
+VFX::VFX(float screenWidth, float screenHeight)
+    : m_width(screenWidth), m_height(screenHeight)
+{
+    m_fbo.Bind();
+
+    m_texture.Bind();
+    m_texture.LoadData(GL_RGB, GL_RGB, m_width, m_height, nullptr);
+    m_fbo.AttachTexture2D(m_texture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0);
+
+    m_rbo.Bind();
+    m_rbo.storage(GL_DEPTH24_STENCIL8, m_width, m_height);
+    m_fbo.AttachRenderBuffer(m_rbo, GL_DEPTH_STENCIL_ATTACHMENT);
+
+    float vertices[4 * 3 * 2] =
+    {
+        -1.0f, -1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f, 1.0f, 0.0f,
+         1.0f,  1.0f, 1.0f, 1.0f,
+
+         1.0f,  1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f
+    };
+
+    m_vbo.SetSize(sizeof(vertices));
+    m_vbo.Update(vertices, sizeof(vertices), 0);
+
+    m_vbl.Push<float>(2);
+    m_vbl.Push<float>(2);
+
+    m_vao.AddBuffer(m_vbo, m_vbl);
+
+    m_shader.AddVertexShader("engine/resources/vfx/shaders/vert_vfx.shader");
+    m_shader.AddFragmentShader("engine/resources/vfx/shaders/frag_vfx.shader");
+    m_shader.Create();
+}
+
+VFX::~VFX()
+{
+}
+
+void VFX::Start()
+{
+    m_fbo.Bind();
+}
+
+void VFX::Unbind()
+{
+    m_fbo.Unbind();
+}
+
+void VFX::End(Renderer& renderer)
+{
+    m_vao.Bind();
+    m_shader.Bind();
+
+    unsigned int slot = 0;
+
+    m_shader.SetUniform1i("texFrameBuffer", slot);
+    glActiveTexture(GL_TEXTURE0 + slot);
+    m_texture.Bind(slot);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void VFX::Apply(ARES_VFX_ENUM type, float x, float y, float width, float height)
+{
+    m_shader.Bind();
+
+    m_shader.SetUniform1i("u_screen_width", m_width);
+    m_shader.SetUniform1i("u_screen_height", m_height);
+
+    m_shader.SetUniform1f("u_RegionX", x);
+    m_shader.SetUniform1f("u_RegionY", y);
+    m_shader.SetUniform1f("u_RegionWidth", width);
+    m_shader.SetUniform1f("u_RegionHeight", height);
+
+    GLfloat move = glfwGetTime();
+    m_shader.SetUniform1f("u_time", move);
+
+    /*
+    m_shader.SetUniform1i("u_torque",    false);
+    m_shader.SetUniform1i("u_wavy",      false);
+    m_shader.SetUniform1i("u_grayscale", false);
+    m_shader.SetUniform1i("u_sharpen",   false);
+    m_shader.SetUniform1i("u_edges",     false);
+    m_shader.SetUniform1i("u_blur",      false);
+    */
+
+    switch (type)
+    {
+    case(EFFECT_NORMAL):
+        break;
+    case(EFFECT_TORQUE):
+        m_shader.SetUniform1i("u_torque", 1);
+        break;
+    case(EFFECT_WAVY):
+        m_shader.SetUniform1i("u_wavy", 1);
+        break;
+    case(EFFECT_GRAYSCALE):
+        m_shader.SetUniform1i("u_grayscale", 1);
+        break;
+    case(EFFECT_SHARPEN):
+        m_shader.SetUniform1i("u_sharpen", 1);
+        break;
+    case(EFFECT_EDGES):
+        m_shader.SetUniform1i("u_edges", 1);
+        break;
+    case(EFFECT_BLUR):
+        m_shader.SetUniform1i("u_blur", 1);
+        break;
+    default:
+        break;
+    }
+
+    m_shader.Unbind();
+}
+
+VFXHandler::VFXHandler(float screenWidth, float screenHeight)
+    : m_screen_width(screenWidth), m_screen_height(screenHeight)
+{
 }
 
 VFXHandler::~VFXHandler()
 {
 }
 
-void VFXHandler::AddVFX(const std::string& vert_filepath, const std::string& frag_filepath, int VFXID)
+void VFXHandler::AddVFX(const std::string& id)
 {
-    m_VFXs[VFXID] = new VFX(vert_filepath, frag_filepath);
+    VFX* vfx = new VFX(m_screen_width, m_screen_height);
+    m_VFXs[id] = vfx;
 }
 
-void VFXHandler::RemoveVFX(int VFXID)
+void VFXHandler::Start()
 {
-    auto iter = m_VFXs.find(VFXID);
-    if (iter == m_VFXs.end()) {
-        std::cout << "VFX with ID " << VFXID << " does not exist" << std::endl;
-    }
-    else
+    // Binds the first fbo to begin with
+    m_VFXs.begin()->second->Start();
+}
+
+void VFXHandler::Apply(const std::string& id, ARES_VFX_ENUM type, float x, float y, float width, float height)
+{
+    // Applies region and type of effect
+    // TODO: Allows entering custom shader code / type of effect
+    auto it = m_VFXs.find(id);
+    if (it != m_VFXs.end())
     {
-        m_VFXs.erase(iter);
+        it->second->Apply(type, x, y, width, height);
     }
 }
 
-void VFXHandler::Start(int VFXID)
+void VFXHandler::End(Renderer& renderer)
 {
-    auto iter = m_VFXs.find(VFXID);
-    if (iter != m_VFXs.end())
-    {
-        iter->second->Start();
-    }
-}
+    auto currentIter = m_VFXs.begin();
 
-void VFXHandler::End(int VFXID)
-{
-    auto iter = m_VFXs.find(VFXID);
-    if (iter != m_VFXs.end())
-    {
-        iter->second->End(m_renderer);
-    }
-}
-
-Texture VFXHandler::GetTexture(int VFXID)
-{
-    auto iter = m_VFXs.find(VFXID);
-    if (iter != m_VFXs.end())
-    {
-        return iter->second->GetTexture();
-    }
-}
-
-VFXHandler::VFX::VFX(const std::string& vert_filepath, const std::string& frag_filepath)
-    : m_texture(m_width, m_height, nullptr)
-{
-    m_shader.AddVertexShader(vert_filepath);
-    m_shader.AddFragmentShader(frag_filepath);
-    m_shader.Create();
-
-    m_rbo.Bind();
-    m_rbo.storage(GL_DEPTH24_STENCIL8, m_width, m_height);
-
-    m_fbo.Bind();
-    m_fbo.AttachTexture2D(m_texture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0);
-    m_fbo.AttachRenderBuffer(m_rbo, GL_DEPTH_STENCIL_ATTACHMENT);
-    auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete: " << std::to_string(fboStatus) << std::endl;
-
-    m_fbo.Unbind();
-}
-
-VFXHandler::VFX::~VFX()
-{
-}
-
-void VFXHandler::VFX::Start()
-{
-    // Save current framebuffer
-
-    m_fbo.Bind();
-    m_texture.Unbind();
-    glEnable(GL_DEPTH_TEST);
-
-    // Set viewport and clear framebuffer
-    
-
-    // Use shader program
-}
-
-void VFXHandler::VFX::End(Renderer* renderer)
-{
-    // Restore previous framebuffer
-    m_fbo.Unbind();
-    glDisable(GL_DEPTH_TEST);
-    
     /*
-    m_texture_handler->AddTexture()
-    m_shader.Bind();
-    Rect rect(640, 360, 1280, 720, 3, 0);
-    rect.Draw(*renderer, 640, 360);
+    How it goes:
+
+    Unbinds the current fbo
+    Starts the next fbo
+    Ends/Draws the current fbo (result gets stored in the next fbo)
     */
 
-    // Quad covering the screen
-    const float quadVertices[24]
+    while (currentIter != m_VFXs.end())
     {
-            -1.0f,  1.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f,
-             1.0f, -1.0f, 1.0f, 0.0f,
+        currentIter->second->Unbind();
 
-            -1.0f,  1.0f, 0.0f, 1.0f,
-             1.0f, -1.0f, 1.0f, 0.0f,
-             1.0f,  1.0f, 1.0f, 1.0f
-    };
+        auto nextIter = std::next(currentIter);
+        if (nextIter != m_VFXs.end())
+        {
+            nextIter->second->Start();
+        }
 
-    VertexBuffer vbo(&quadVertices, sizeof(quadVertices));
-    VertexArray vao;
-    vao.Bind();
-    VertexBufferLayout vbl;
-    vbl.Push<GLfloat>(2);
-    vbl.Push<GLfloat>(2);
-    vao.AddBuffer(vbo, vbl);
+        currentIter->second->End(renderer);
 
-    m_texture.Bind();
-    m_shader.Bind();
-    vao.Bind();
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-Texture VFXHandler::VFX::GetTexture()
-{
-    return m_texture;
+        currentIter = nextIter;
+    }
 }

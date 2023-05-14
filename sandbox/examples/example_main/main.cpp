@@ -17,6 +17,10 @@ void reDraw(Renderer& renderer)
 
 int main()
 {
+
+    /*-------------------------------------------------------------*/
+    // Init
+
     const int WIDTH = 1280;
     const int HEIGHT = 720;
     Control ctrl = Init(WIDTH, HEIGHT, "Abstracted window");
@@ -26,12 +30,14 @@ int main()
 
     WIN.SetBlending(true);
 
+    /*-------------------------------------------------------------*/
+    // Audio
+
     AUDIO.add("sandbox/examples/example_main/audio/giorno.mp3", 1);
     //AUDIO.play(1);
 
-    //VFX.AddVFX("sandbox/examples/example_main/shaders/vfx/vfx.vert", "sandbox/examples/example_main/shaders/vfx/vfx.frag", 1);
-
     /*-------------------------------------------------------------*/
+    // Adding grass textures and rects
 
     RESOURCE.AddResource("grass", 64, 64);
     RESOURCE.AddShader("grass", "sandbox/examples/example_main/shaders/grass/vert_grass.shader", "sandbox/examples/example_main/shaders/grass/frag_grass.shader", 1);
@@ -50,6 +56,7 @@ int main()
     Rect rgrass_f(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, ARES_NO_COLOR, tgrass_f);
 
     /*-------------------------------------------------------------*/
+    // Adding potion textures and rects
 
     RESOURCE.AddResource("potion", 64, 64);
     RESOURCE.AddShader("potion", "sandbox/examples/example_main/shaders/potion/vert_potion.shader", "sandbox/examples/example_main/shaders/potion/frag_potion.shader", 1);
@@ -66,6 +73,7 @@ int main()
     Rect rpotion_f(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, ARES_NO_COLOR, tpotion_f);
 
     /*-------------------------------------------------------------*/
+    // Fonts
     
     Rect square_red(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, Color{255.0f, 0.0f, 0.0f, 255.0f});
 
@@ -75,13 +83,23 @@ int main()
     TextureUse tfont_f = RESOURCE.FullTexture(USER.GetResourceID(), 1);
     Rect rfont_f(Position{ 100.0f, 0.0f, 150.0f, 150.0f }, ARES_NO_COLOR, tfont_f);
 
+    /*-------------------------------------------------------------*/
+    // Multiple effects
+
+    ARES_VFX.AddVFX("1");
+    ARES_VFX.AddVFX("2");
+    ARES_VFX.AddVFX("3");
+    ARES_VFX.AddVFX("4");
+    ARES_VFX.AddVFX("5");
+    ARES_VFX.AddVFX("6");
+
+    /*-------------------------------------------------------------*/
+
     // Main Loop
     while (WIN.WindowOpen())
     {
-        // -> Nested VFXs
-        //VFX.Start(1);
-         
-        /*-------------------------------------------------------------*/
+        // Binds first Framebuffer
+        ARES_VFX.Start();
         
         // Clearing vertices and indices(actually this time)
         WIN.Clear(Color{ 0.0f, 153.0f, 219.0f, 1.0f });
@@ -91,13 +109,14 @@ int main()
         glm::mat4 view = glm::ortho(0.0f, float(WIN.getWidth()), 0.0f, float(WIN.getHeight()), -1.0f, 1.0f);
         glm::mat4 mvp = view;
 
+        // Sets uniforms
         RESOURCE.BindResource("grass", 1);
         RESOURCE.SetUniformMat4f("grass", 1, "u_MVP", mvp);
 
         RESOURCE.BindResource("potion", 1);
         RESOURCE.SetUniformMat4f("potion", 1, "u_MVP", mvp);
 
-        // Draw rect dynamically
+        // Render rects dynamically
         if (USERINPUT.getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
         {   
             RESOURCE.BindResource("grass", 1);
@@ -116,12 +135,20 @@ int main()
             RENDER.Draw();
         }
 
+        // Render text
         USER.RenderText(arial, "Holy hell ! ! !\nnew line ?", 100, 250, Color{ 1.0f, 0.8f, 0.0f, 0.8f });
         USER.RenderText(boh, "Holy hell ! ! !\nnew line ?", 500, 250, Color{ 0.0f, 0.8f, 1.0f, 0.6f });
 
-        /*-------------------------------------------------------------*/
+        // Order matters here, experiment
+        ARES_VFX.Apply("1", EFFECT_GRAYSCALE, 250, 250, 400, 300);
+        ARES_VFX.Apply("2", EFFECT_TORQUE,    250, 250, 400, 300);
+        ARES_VFX.Apply("3", EFFECT_WAVY,      250, 250, 400, 300);
+        ARES_VFX.Apply("4", EFFECT_SHARPEN,   250, 250, 400, 300);
+        ARES_VFX.Apply("5", EFFECT_EDGES,     250, 250, 400, 300);
+        ARES_VFX.Apply("6", EFFECT_BLUR,      250, 250, 400, 300);
 
-        //VFX.End(1);
+        // Unbinds Framebuffer and draws screen wide rect
+        ARES_VFX.End(RENDER);
         
         // Swap buffers and OS/User events
         WIN.Update();
