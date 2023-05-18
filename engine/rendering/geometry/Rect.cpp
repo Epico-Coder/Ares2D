@@ -26,6 +26,7 @@ Rect::Rect(Position position, Color color, TextureUse texture_use)
 {
 	m_width = position.w;
 	m_height = position.h;
+	m_position = position;
 
 	Vertex v1{ position.x			  , position.y			   , color.r, color.g, color.b, color.a, texture_use.m_tex_cords[0].first, texture_use.m_tex_cords[0].second, texture_use.m_texture_id };
 	Vertex v2{ position.x + position.w, position.y			   , color.r, color.g, color.b, color.a, texture_use.m_tex_cords[1].first, texture_use.m_tex_cords[1].second, texture_use.m_texture_id };
@@ -50,6 +51,7 @@ Rect::Rect(Position position, Color color, float TexID)
 {
 	m_width = position.w;
 	m_height = position.h;
+	m_position = position;
 
 	Vertex v1{ position.x			  , position.y			   , color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
 	Vertex v2{ position.x + position.w, position.y			   , color.r, color.g, color.b, color.a, 0.0f, 0.0f, TexID };
@@ -125,16 +127,21 @@ void Rect::Add(Renderer& renderer, int x, int y)
 	renderer.AddRenderable(*this);
 }
 
+Position Rect::GetPos()
+{
+	return m_position;
+}
+
 void Rect::SetPos(int x, int y)
 {
-	m_vertices[0 + (vertex_num * 0)] = x - m_width / 2;
-	m_vertices[1 + (vertex_num * 0)] = y - m_height / 2;
-	m_vertices[0 + (vertex_num * 1)] = x + m_width / 2;
-	m_vertices[1 + (vertex_num * 1)] = y - m_height / 2;
-	m_vertices[0 + (vertex_num * 2)] = x + m_width / 2;
-	m_vertices[1 + (vertex_num * 2)] = y + m_height / 2;
-	m_vertices[0 + (vertex_num * 3)] = x - m_width / 2;
-	m_vertices[1 + (vertex_num * 3)] = y + m_height / 2;
+	m_vertices[0 + (vertex_num * 0)] = x;
+	m_vertices[1 + (vertex_num * 0)] = y;
+	m_vertices[0 + (vertex_num * 1)] = x + m_width;
+	m_vertices[1 + (vertex_num * 1)] = y;
+	m_vertices[0 + (vertex_num * 2)] = x + m_width;
+	m_vertices[1 + (vertex_num * 2)] = y + m_height;
+	m_vertices[0 + (vertex_num * 3)] = x ;
+	m_vertices[1 + (vertex_num * 3)] = y + m_height;
 }
 
 void Rect::SetColor(Color color)

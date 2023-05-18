@@ -10,14 +10,10 @@
 #include "engine/rendering/storage/VertexBufferLayout.h"
 #include "engine/rendering/storage/VertexArray.h"
 #include "engine/rendering/storage/IndexBuffer.h"
-#include "engine/rendering/storage/FrameBuffer.h"
-#include "engine/rendering/storage/RenderBuffer.h"
 
 #include "engine/rendering/Renderable.h"
 
 #include "engine/utils/error/ErrorHandling.h"
-
-#include "engine/resources/textures/Texture.h"
 
 #include "engine/utils/color/Color.h"
 #include "engine/utils/math/Math.h"
@@ -34,7 +30,7 @@ public:
 
 	void DrawTestTriangle(float x, float y, float size) const;
 
-	void AddRenderable(Renderable& renderable, const char* id = nullptr);
+	void AddRenderable(Renderable renderable, const char* id = nullptr);
 
 	void Clear();
 	void Update();

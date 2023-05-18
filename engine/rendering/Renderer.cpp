@@ -28,7 +28,7 @@ void Renderer::DrawTestTriangle(float x, float y, float size) const
 	glEnd();
 }
 
-void Renderer::AddRenderable(Renderable& renderable, const char* id)
+void Renderer::AddRenderable(Renderable renderable, const char* id)
 {
 	m_Batches.back()->AddRenderable(renderable, id);
 }
@@ -101,9 +101,10 @@ void Renderer::Batch::AddRenderable(Renderable& renderable, const char* id)
 {
 	if (!m_indices.empty())
 	{
+		auto to_add = *std::max_element(m_indices.begin(), m_indices.end()) + 1;
 		for (int i = 0; i < renderable.m_indices.size(); i++)
 		{
-			renderable.m_indices[i] += *std::max_element(m_indices.begin(), m_indices.end()) + 1;
+			renderable.m_indices[i] += to_add;
 		}
 	}
 

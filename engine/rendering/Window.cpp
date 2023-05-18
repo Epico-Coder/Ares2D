@@ -12,6 +12,7 @@ Window::~Window()
 bool Window::Init(int width, int height, const char* title)
 {
     m_Window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+
     m_width = width;
     m_height = height;
 
@@ -88,6 +89,46 @@ int Window::getWidth()
 int Window::getHeight()
 {
     return m_height;
+}
+
+void Window::SetCursorVisible()
+{
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::SetCursorHidden()
+{
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+}
+
+void Window::SetCursorDefault()
+{
+    glfwSetCursor(m_Window, nullptr);
+}
+
+void Window::SetCursorImage(const std::string& filepath)
+{
+    int width, height, bpp;
+
+    unsigned char* pixels = stbi_load(filepath.c_str(), &width, &height, &bpp, STBI_rgb_alpha);
+    if (!pixels)
+    {
+        std::cout << "\nError: Failed to load cursor image: " << filepath << std::endl;
+        std::cout << stbi_failure_reason() << std::endl;
+        __debugbreak();
+    }
+    else
+    {
+        GLFWimage image;
+        image.width = width;
+        image.height = height;
+        image.pixels = pixels;
+
+        GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+        glfwSetCursor(m_Window, cursor);
+
+        stbi_image_free(pixels);
+    }
 }
 
 void Window::Terminate()

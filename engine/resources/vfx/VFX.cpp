@@ -39,6 +39,20 @@ VFX::VFX(float screenWidth, float screenHeight)
     m_shader.Create();
 }
 
+void VFX::SetNoEffect()
+{
+    m_shader.Bind();
+
+    m_shader.SetUniform1i("u_torque", 0);
+    m_shader.SetUniform1i("u_wavy", 0);
+    m_shader.SetUniform1i("u_grayscale", 0);
+    m_shader.SetUniform1i("u_sharpen", 0);
+    m_shader.SetUniform1i("u_edges", 0);
+    m_shader.SetUniform1i("u_blur", 0);
+
+    m_shader.Unbind();
+}
+
 VFX::~VFX()
 {
 }
@@ -81,15 +95,6 @@ void VFX::Apply(ARES_VFX_ENUM type, float x, float y, float width, float height)
 
     GLfloat move = glfwGetTime();
     m_shader.SetUniform1f("u_time", move);
-
-    /*
-    m_shader.SetUniform1i("u_torque",    false);
-    m_shader.SetUniform1i("u_wavy",      false);
-    m_shader.SetUniform1i("u_grayscale", false);
-    m_shader.SetUniform1i("u_sharpen",   false);
-    m_shader.SetUniform1i("u_edges",     false);
-    m_shader.SetUniform1i("u_blur",      false);
-    */
 
     switch (type)
     {
@@ -138,7 +143,14 @@ void VFXHandler::AddVFX(const std::string& id)
 void VFXHandler::Start()
 {
     // Binds the first fbo to begin with
-    m_VFXs.begin()->second->Start();
+    auto currentIter = m_VFXs.begin();
+    currentIter->second->Start();
+
+    while (currentIter != m_VFXs.end())
+    {
+        currentIter->second->SetNoEffect();
+        currentIter = std::next(currentIter);
+    }    
 }
 
 void VFXHandler::Apply(const std::string& id, ARES_VFX_ENUM type, float x, float y, float width, float height)

@@ -37,6 +37,7 @@ public:
     void Start();
     void Unbind();
     void End(Renderer& renderer);
+    void SetNoEffect();
     void Apply(ARES_VFX_ENUM type, float x, float y, float width, float height);
 
 private:

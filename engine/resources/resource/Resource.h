@@ -17,7 +17,7 @@ public:
 	Resource(const std::string& name, int tex_width=1280, int tex_height=720);
 	~Resource();
 
-	TextureUse AddTexture(const std::string& filepath);
+	TextureUse AddTexture(const std::string& filepath, float scale=1.0f);
 	TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
 
 	TextureUse FullTexture(int atlasID);
@@ -45,20 +45,20 @@ private:
 class ResourceHandler
 {
 public:
-	ResourceHandler(Renderer* renderer);
+	ResourceHandler();
 	~ResourceHandler();
 
 	void AddResource(const std::string& resourceID, int tex_width, int tex_height);
 	void BindResource(const std::string& resourceID, int shaderID);
 	void RemoveResource(const std::string& resourceID);
 
-	TextureUse AddTexture(const std::string& resourceID, const std::string& filepath);
+	TextureUse AddTexture(const std::string& resourceID, const std::string& filepath, float scale=1.0f);
 	TextureUse AddTexture(const std::string& resourceID, GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
 
 	TextureUse FullTexture(const std::string& resourceID, int atlasID);
 
 
-	void AddShader(const std::string& resourceID, const std::string& vert_file_path, const std::string& frag_file_path, int shaderID);
+	void AddShader(const std::string& resourceID, int shaderID, const std::string& vert_file_path="engine/resources/resource/shaders/vert_default.shader", const std::string& frag_file_path="engine/resources/resource/shaders/frag_default.shader");
 
 	void SetUniform1i(    const std::string& resourceID, int shaderID, const std::string& name, int v1                                 );
 	void SetUniform1iv(   const std::string& resourceID, int shaderID, const std::string& name, unsigned int count, int v1[]           );
@@ -71,7 +71,5 @@ public:
 	void SetUniformMat4f( const std::string& resourceID, int shaderID, const std::string& name, const glm::mat4& matrix                );
 private:
 	std::unordered_map<std::string, Resource*> m_resources;
-
-	Renderer* m_renderer;
 };
 

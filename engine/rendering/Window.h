@@ -2,7 +2,12 @@
 
 #include "dependancies/glew/include/GL/glew.h"
 #include "dependancies/glfw/include/GLFW/glfw3.h"
+
+#include "dependancies/stbi_image/stb_image.h"
+
 #include "engine/utils/color/Color.h"
+
+#include <string>
 
 class Window
 {
@@ -20,6 +25,12 @@ public:
 
 	int getWidth();
 	int getHeight();
+
+	void SetCursorVisible();
+	void SetCursorHidden();
+
+	void SetCursorDefault();
+	void SetCursorImage(const std::string& filepath);
 
 	bool WindowOpen();
 

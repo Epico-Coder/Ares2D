@@ -10,9 +10,9 @@ Resource::~Resource()
 {
 }
 
-TextureUse Resource::AddTexture(const std::string& filepath)
+TextureUse Resource::AddTexture(const std::string& filepath, float scale)
 {
-	return m_th.AddTexture(filepath);
+	return m_th.AddTexture(filepath, scale);
 }
 
 TextureUse Resource::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
@@ -85,8 +85,7 @@ void Resource::SetUniformMat4f(int shaderID, const std::string& name, const glm:
 	m_sh.SetUniformMat4f(shaderID, name, matrix);
 }
 
-ResourceHandler::ResourceHandler(Renderer* renderer)
-	: m_renderer(renderer)
+ResourceHandler::ResourceHandler()
 {
 }
 
@@ -110,16 +109,16 @@ void ResourceHandler::AddResource(const std::string& resourceID, int tex_width, 
 	}
 }
 
-TextureUse ResourceHandler::AddTexture(const std::string& resourceID, const std::string& filepath)
+TextureUse ResourceHandler::AddTexture(const std::string& resourceID, const std::string& filepath, float scale)
 {
 	auto it = m_resources.find(resourceID);
 	if (it != m_resources.end()) 
 	{
-		return it->second->AddTexture(filepath);
+		return it->second->AddTexture(filepath, scale);
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -132,11 +131,11 @@ TextureUse ResourceHandler::AddTexture(const std::string& resourceID, GLenum sfo
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
-void ResourceHandler::AddShader(const std::string& resourceID, const std::string& vert_file_path, const std::string& frag_file_path, int shaderID)
+void ResourceHandler::AddShader(const std::string& resourceID, int shaderID, const std::string& vert_file_path, const std::string& frag_file_path)
 {
 	auto it = m_resources.find(resourceID);
 	if (it != m_resources.end()) 
@@ -145,7 +144,7 @@ void ResourceHandler::AddShader(const std::string& resourceID, const std::string
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -154,13 +153,12 @@ void ResourceHandler::BindResource(const std::string& resourceID, int shaderID)
 	auto it = m_resources.find(resourceID);
 	if (it != m_resources.end())
 	{
-		m_renderer->Clear();
 		it->second->BindShader(shaderID);
 		it->second->BindTexture();
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -173,7 +171,7 @@ TextureUse ResourceHandler::FullTexture(const std::string& resourceID, int atlas
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -186,7 +184,7 @@ void ResourceHandler::SetUniform1i(const std::string& resourceID, int shaderID, 
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -199,7 +197,7 @@ void ResourceHandler::SetUniform1iv(const std::string& resourceID, int shaderID,
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -212,7 +210,7 @@ void ResourceHandler::SetUniform1f(const std::string& resourceID, int shaderID, 
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -225,7 +223,7 @@ void ResourceHandler::SetUniform2fv(const std::string& resourceID, int shaderID,
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -238,7 +236,7 @@ void ResourceHandler::SetUniform3f(const std::string& resourceID, int shaderID, 
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -251,7 +249,7 @@ void ResourceHandler::SetUniform4i(const std::string& resourceID, int shaderID, 
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -264,7 +262,7 @@ void ResourceHandler::SetUniform4f(const std::string& resourceID, int shaderID, 
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -277,7 +275,7 @@ void ResourceHandler::SetUniform4fv(const std::string& resourceID, int shaderID,
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -290,7 +288,7 @@ void ResourceHandler::SetUniformMat4f(const std::string& resourceID, int shaderI
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }
 
@@ -303,6 +301,6 @@ void ResourceHandler::RemoveResource(const std::string& resourceID)
 	}
 	else
 	{
-		std::cout << "No resource called" << resourceID << std::endl;
+		std::cout << "No resource called: " << resourceID << std::endl;
 	}
 }

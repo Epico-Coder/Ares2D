@@ -78,7 +78,7 @@ UI::~UI()
 void UI::Init()
 {
     m_rh->AddResource(resource_name, 600, 600);
-    m_rh->AddShader(resource_name, "engine/utils/ui/shaders/vert_ui.shader", "engine/utils/ui/shaders/frag_ui.shader", 1);
+    m_rh->AddShader(resource_name, 1, "engine/utils/ui/shaders/vert_ui.shader", "engine/utils/ui/shaders/frag_ui.shader");
     m_rh->BindResource(resource_name, 1);
     m_rh->SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
 }

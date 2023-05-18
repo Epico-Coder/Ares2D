@@ -5,7 +5,6 @@
 #include FT_FREETYPE_H
 #include "dependancies/glm/glm.hpp"
 #include "dependancies/imgui/lib/imgui.h"
-#include "dependancies/stbi_image/stb_image.h"
 
 #include "utils/error/ErrorHandling.h"
 #include "utils/color/Color.h"

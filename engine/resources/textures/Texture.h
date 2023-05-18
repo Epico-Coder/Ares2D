@@ -53,8 +53,8 @@ public:
     bool PreAddTexture(int width, int height);
     TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data, const std::string& th_name);
 
-    bool PreAddTexture(const std::string& filepath);
-    TextureUse AddTexture(const std::string& filepath, const std::string& th_name);
+    bool PreAddTexture(const std::string& filepath, float scale=1.0f);
+    TextureUse AddTexture(const std::string& filepath, const std::string& th_name, float scale=1.0f);
     
     void Bind();
     int GetID();
@@ -77,7 +77,7 @@ public:
 
     // Add a texture to the last texture atlas
     TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
-    TextureUse AddTexture(const std::string& filepath);
+    TextureUse AddTexture(const std::string& filepath, float scale=1.0f);
 
     TextureUse FullTexture(int textureID);
 

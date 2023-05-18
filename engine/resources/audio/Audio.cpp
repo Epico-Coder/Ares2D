@@ -101,6 +101,9 @@ void AudioHandler::Audio::play() {
     if (m_channel == nullptr) {
         FMOD_RESULT result = m_sound->setMode(FMOD_LOOP_NORMAL);
         result = m_system->playSound(m_sound, 0, false, &m_channel);
+        
+        // temporary set volume to retain ears
+        //m_channel->setVolume(0.1f);
     }
     else {
         m_channel->setPaused(false);

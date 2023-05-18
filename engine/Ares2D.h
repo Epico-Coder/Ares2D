@@ -50,7 +50,7 @@
 
 
 namespace Ares2D
-{   
+{
     // Main
     static Window WIN;
     static Renderer RENDER;
@@ -59,11 +59,10 @@ namespace Ares2D
     // Rendering
     static AudioHandler AUDIO;
 
-    static ResourceHandler RESOURCE(&RENDER);
-    // static ImageHandler IMAGE;
-    //static VFXHandler VFX(&RENDER, &RESOURCE);
+    static ResourceHandler RESOURCE;
+
     static VFXHandler ARES_VFX(1280.0f, 720.0f);
-     
+
     // Help
     static UI USER(&RENDER, &RESOURCE);
     // static PhysicsHandler PHYSICS;
@@ -85,4 +84,4 @@ namespace Ares2D
 
         return Control(&WIN, &RENDER);
     }
-}
+};

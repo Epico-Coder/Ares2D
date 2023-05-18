@@ -131,7 +131,7 @@ TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, i
 	return TextureUse{ outTextureCords, m_ID, th_name };
 }
 
-bool TextureAtlas::PreAddTexture(const std::string& filepath)
+bool TextureAtlas::PreAddTexture(const std::string& filepath, float scale)
 {
 	int width, height, channels;
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
@@ -145,13 +145,14 @@ bool TextureAtlas::PreAddTexture(const std::string& filepath)
 	// Checks if space is available
 	else
 	{
-		return PreAddTexture(width, height);
+		return PreAddTexture(width * scale, height * scale);
 	}
 }
 
-TextureUse TextureAtlas::AddTexture(const std::string& filepath, const std::string& th_name)
+TextureUse TextureAtlas::AddTexture(const std::string& filepath, const std::string& th_name, float scale)
 {
 	int width, height, channels;
+	
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 
 	// Cannot exceed further in x direction
@@ -250,16 +251,16 @@ TextureUse TextureHandler::AddTexture(GLenum sformat, GLenum dformat, int width,
 	return m_textureAtlases.back()->AddTexture(sformat, dformat, width, height, data, m_name);
 }
 
-TextureUse TextureHandler::AddTexture(const std::string& filepath)
+TextureUse TextureHandler::AddTexture(const std::string& filepath, float scale)
 {
 	// Add a texture
-	if (!m_textureAtlases.back()->PreAddTexture(filepath))
+	if (!m_textureAtlases.back()->PreAddTexture(filepath, scale))
 	{
 		// If returns false, add new atlas
 		m_textureAtlases.push_back(new TextureAtlas(m_buffer, m_atlas_width, m_atlas_height, m_textureAtlases.size() + 1));
 	}
 
-	return m_textureAtlases.back()->AddTexture(filepath, m_name);
+	return m_textureAtlases.back()->AddTexture(filepath, m_name, scale);
 }
 
 TextureUse TextureHandler::FullTexture(int textureID)
