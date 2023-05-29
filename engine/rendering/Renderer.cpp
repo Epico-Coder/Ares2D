@@ -41,29 +41,39 @@ void Renderer::Clear()
 	}
 }
 
-void Renderer::Update()
+void Renderer::Update(bool show_info)
 {
 	if (m_Batches.back()->getIndicesCount() >= m_Batches.back()->getIndicesMaxCount())
 	{
 		AddBatch(m_batchSize);
 	}
 
-	std::cout << "------------------------------------------------------------------" << std::endl;
-	std::cout << "Batches: " << m_Batches.size() << std::endl;
-	
-	for (Batch* batch : m_Batches)
+	if (show_info)
 	{
-		batch->Update();
-		//std::cout << "Geometries: " << batch->getRenderableCount() << std::endl;
-		std::cout << "Vetices: " << batch->getVerticesCount() << std::endl;
-		std::cout << "Indices: " << batch->getIndicesCount() << std::endl;
+
+		std::cout << "------------------------------------------------------------------" << std::endl;
+		std::cout << "Batches: " << m_Batches.size() << std::endl;
+
+		for (Batch* batch : m_Batches)
+		{
+			batch->Update();
+			std::cout << "Vetices: " << batch->getVerticesCount() << std::endl;
+			std::cout << "Indices: " << batch->getIndicesCount() << std::endl;
+		}
+		std::cout << "------------------------------------------------------------------" << std::endl;
 	}
-	std::cout << "------------------------------------------------------------------" << std::endl;
+	else
+	{
+		for (Batch* batch : m_Batches)
+		{
+			batch->Update();
+		}
+	}
 }
 
-void Renderer::Draw()
+void Renderer::Draw(bool show_info)
 {
-	Update();
+	Update(show_info);
 	for (int i = 0; i < m_Batches.size(); i++)
 	{
 		m_Batches[i]->Draw();

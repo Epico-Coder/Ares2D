@@ -20,6 +20,11 @@ Rect::Rect()
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = m_position.x + (m_position.w / 2);
+	m_center.y = m_position.y + (m_position.h / 2);
 }
 
 Rect::Rect(Position position, Color color, TextureUse texture_use)
@@ -45,6 +50,11 @@ Rect::Rect(Position position, Color color, TextureUse texture_use)
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = m_position.x + (m_position.w / 2);
+	m_center.y = m_position.y + (m_position.h / 2);
 }
 
 Rect::Rect(Position position, Color color, float TexID)
@@ -70,12 +80,18 @@ Rect::Rect(Position position, Color color, float TexID)
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = m_position.x + (m_position.w / 2);
+	m_center.y = m_position.y + (m_position.h / 2);
 }
 
 Rect::Rect(float x, float y, float width, float height, float r, float g, float b, float a, float TexID)
 {
 	m_width = width;
 	m_height = height;
+	m_position = Position{ x, y, width, height };
 
 	Vertex v1{ x	    , y			, r, g, b, a, 0.0f, 0.0f, TexID };
 	Vertex v2{ x + width, y			, r, g, b, a, 1.0f, 0.0f, TexID };
@@ -94,6 +110,11 @@ Rect::Rect(float x, float y, float width, float height, float r, float g, float 
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = m_position.x + (m_position.w / 2);
+	m_center.y = m_position.y + (m_position.h / 2);
 }
 
 Rect::Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
@@ -110,6 +131,11 @@ Rect::Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
 	}
 
 	m_indices = { 0, 1, 2, 2, 3, 0 };
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = m_position.x + (m_position.w / 2);
+	m_center.y = m_position.y + (m_position.h / 2);
 }
 
 Rect::~Rect()
@@ -142,6 +168,11 @@ void Rect::SetPos(int x, int y)
 	m_vertices[1 + (vertex_num * 2)] = y + m_height;
 	m_vertices[0 + (vertex_num * 3)] = x ;
 	m_vertices[1 + (vertex_num * 3)] = y + m_height;
+
+	m_og_vertices = m_vertices;
+
+	m_center.x = x + (m_position.w / 2);
+	m_center.y = y + (m_position.h / 2);
 }
 
 void Rect::SetColor(Color color)
@@ -195,6 +226,61 @@ glm::mat4 Rect::getModel()
 
 void Rect::Translate(float x, float y)
 {
-	glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
-	m_Model *= translation;
+}
+
+void Rect::Scale(float x, float y)
+{
+}
+
+void Rect::Rotate(float angle)
+{
+	SetAngle(m_angle + angle);
+}
+
+void Rect::SetAngle(float angle)
+{
+	// Compute the rotation matrix
+	glm::mat2 rotationMatrix = glm::mat2(glm::vec2(cos(angle), -sin(angle)), glm::vec2(sin(angle), cos(angle)));
+
+	// Compute the rotation point (center of the rectangle)
+	glm::vec2 center{ m_position.x + m_position.w / 2, m_position.y + m_position.h / 2 };
+
+	// Rotate each vertex using the original positions as reference
+	for (int i = 0; i < 4; ++i)
+	{
+		glm::vec2 newPos = RotateVertex(m_og_vertices[0 + (vertex_num * i)], m_og_vertices[1 + (vertex_num * i)], m_center, rotationMatrix);
+		m_vertices[0 + (vertex_num * i)] = newPos.x;
+		m_vertices[1 + (vertex_num * i)] = newPos.y;
+	}
+
+	// Update the current angle
+	m_angle = angle;
+}
+
+void Rect::SetAngle(float angle, glm::vec2 center)
+{
+	// Compute the rotation matrix
+	glm::mat2 rotationMatrix = glm::mat2(glm::vec2(cos(angle), -sin(angle)), glm::vec2(sin(angle), cos(angle)));
+
+	// Rotate each vertex using the original positions as reference
+	for (int i = 0; i < 4; ++i)
+	{
+		glm::vec2 newPos = RotateVertex(m_og_vertices[0 + (vertex_num * i)], m_og_vertices[1 + (vertex_num * i)], m_center, rotationMatrix);
+		m_vertices[0 + (vertex_num * i)] = newPos.x;
+		m_vertices[1 + (vertex_num * i)] = newPos.y;
+	}
+
+	// Update the current angle
+	m_angle = angle;
+}
+
+glm::vec2 Rect::RotateVertex(float x, float y, const glm::vec2& rotationPoint, const glm::mat2& rotationMatrix)
+{
+	glm::vec2 position{ x, y };
+
+	position -= rotationPoint;
+	position = rotationMatrix * position;
+	position += rotationPoint;
+
+	return position;
 }

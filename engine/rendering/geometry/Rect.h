@@ -29,13 +29,20 @@ public:
 	glm::mat4 getModel();
 
 	void Translate(float x, float y);
-	void Scale(float x, float y) {}
-	void Rotate(float angle) {}
-
+	void Scale(float x, float y);
+	void Rotate(float angle=0.0f);
+	void SetAngle(float angle);
+	void SetAngle(float angle, glm::vec2 center);
+private:
+	glm::vec2 RotateVertex(float x, float y, const glm::vec2& rotationPoint, const glm::mat2& rotationMatrix);
 private:
 	glm::mat4 m_Model = glm::mat4(1.0f);
 
 	Position m_position;
+
+	float m_angle = 0.0f;
+	glm::vec2 m_center;
+	std::vector<float> m_og_vertices;
 
 	int m_width;
 	int m_height;

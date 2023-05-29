@@ -5,9 +5,11 @@
 #include "sandbox/examples/example_shooter/Player/Player.h"
 #include "sandbox/examples/example_shooter/Enemy/Enemy.h"
 
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+#include <optional>
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
@@ -19,26 +21,27 @@ const int SIZEX = WIDTH / ROWS;
 const int SIZEY = HEIGHT / COLS;
 
 class Level {
+    friend class Player;
 public:
     Level(Renderer* renderer, ResourceHandler* resource, InputHandler* input, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path);
 
     void AddMaterial(int matNumber, const std::string& mat_path);
-
     void AddEnemy(Enemy& enemy);
 
-    void Update(float deltaTime);
+    void Update(float deltaTime, glm::vec2 mouse_pos);
+    void Draw();
+private:
+    std::optional<Position> Collision(int x, int y, int w, int h);
 
     void DrawMap();
 
-    void Draw();
-
-    std::vector<std::vector<int>> ReadTextFile(const std::string& filePath) 
+    std::vector<std::vector<int>> ReadTextFile(const std::string& filePath)
     {
         std::vector<std::vector<int>> level_matrix;
 
         std::ifstream inputFile(filePath);
 
-        if (inputFile.is_open()) 
+        if (inputFile.is_open())
         {
             std::string line;
             while (std::getline(inputFile, line)) {
@@ -52,14 +55,13 @@ public:
 
             inputFile.close();  // Close the file
         }
-        else 
+        else
         {
             std::cerr << "Failed to open the file: " << filePath << std::endl;
         }
 
         return level_matrix;
     }
-
     void WriteTextFile(const std::string& filePath, const std::vector<std::vector<int>>& level_matrix) {
 
         std::ofstream outputFile(filePath);
@@ -83,7 +85,6 @@ public:
             std::cout << "Unable to create file." << std::endl;
         }
     }
-
 private:
     Renderer* m_renderer;
     ResourceHandler* m_resource;
@@ -95,12 +96,13 @@ private:
     const std::string m_level_path;
 
     Player* m_player;
+
     std::vector<Enemy> m_enemies;
 
     Rect m_bg;
     int m_bgX = 0;
     int m_bgA = 1;
 
-    int m_offsetX = 0;
-    int m_offsetY = 0;
+    glm::vec2 m_offsets{ 0, 0 };
+    float m_offsetA = 0.1f;
 };

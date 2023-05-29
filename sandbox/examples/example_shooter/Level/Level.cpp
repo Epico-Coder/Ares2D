@@ -9,7 +9,7 @@ Level::Level(Renderer* renderer, ResourceHandler* resource, InputHandler* input,
     TextureUse t_bg = m_resource->AddTexture(std::to_string(m_level_no), bg_path);
     m_bg = Rect(Position{ 0, 0, WIDTH, HEIGHT }, ARES_NO_COLOR, t_bg);
 
-    m_player = new Player(*m_resource, levelNumber, player_path);
+    m_player = new Player(*m_resource, levelNumber, player_path, [this](int x, int y, int w, int h) {return Collision(x, y, w, h);});
 
     m_resource->BindResource(std::to_string(m_level_no), 1);
 
@@ -33,68 +33,93 @@ void Level::AddEnemy(Enemy& enemy)
     m_enemies.push_back(enemy);
 }
 
-void Level::Update(float deltaTime)
+void Level::Update(float deltaTime, glm::vec2 mouse_pos)
 {
     m_resource->BindResource(std::to_string(m_level_no), 1);
 
     // Move background
     if (m_bgX < -WIDTH)
-    {
         m_bgX = m_bgX % WIDTH;
-    }
 
     m_bgX -= m_bgA;
 
-    float playerSpeed = 250 * deltaTime;
+    // Move level
+    if ((m_offsets.x + m_offsetA + ROWS) < m_level_matrix[0].size())
+    {
+        m_offsets.x += m_offsetA;
+        m_offsets.y += 0;
+    }
 
-    // Take inputs and move player, also move the level map if player is going out of bounds
-    if (m_input->getIsKeyDown(GLFW_KEY_LEFT))
-    {
-        if (m_player->x < (2 * SIZEX) && (m_offsetX > 1))
-            m_offsetX--;
-        else
-            m_player->Move(-playerSpeed, 0);
-    }
-    if (m_input->getIsKeyDown(GLFW_KEY_RIGHT))
-    {
-        if (m_player->x > (WIDTH - (2 * SIZEX)) && (float(m_offsetX + ROWS) < m_level_matrix[0].size()))
-            m_offsetX++;
-        else
-            m_player->Move(playerSpeed, 0);
-    }
-    if (m_input->getIsKeyDown(GLFW_KEY_UP))
-    {
-        if (m_player->y > (HEIGHT - (2 * SIZEY)) && (m_offsetY > 1))
-            m_offsetY--;
-        else
-            m_player->Move(0, playerSpeed);
-    }
-    if (m_input->getIsKeyDown(GLFW_KEY_DOWN))
-    {
-        if (m_player->y < (2 * SIZEY) && (float(m_offsetY + COLS) < m_level_matrix.size()))
-            m_offsetY++;
-        else
-            m_player->Move(0, -playerSpeed);
-    }
+    // Inputs
+
     
-    // Update characters
-    m_player->Update(deltaTime);
 
+    // Up or Space: Activate Jetpack
+    if ((m_input->getIsKeyDown(GLFW_KEY_UP) || m_input->getIsKeyDown(GLFW_KEY_SPACE)))
+        m_player->ActiveJetpack();
+    else
+        m_player->DeactivateJetpack();
+
+    // Left and Right: Dashes
+    if (m_input->getIsKeyDown(GLFW_KEY_LEFT))
+        m_player->DashLeft();
+    else if (m_input->getIsKeyDown(GLFW_KEY_RIGHT))
+        m_player->DashRight();
+
+    // Cursor hover: Aim
+    // Cursor click: Shoot
+
+    if (m_input->getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+        m_player->Shoot(*m_resource);
+
+    // Respond to collisions
+
+    // Update player
+    m_player->Update(deltaTime, mouse_pos);
+
+    // Update Enemies
     for (auto& enemy : m_enemies)
     {
         enemy.Update(deltaTime);
     }
 }
 
-void Level::DrawMap()
+std::optional<Position> Level::Collision(int x, int y, int w, int h)
 {
-    for (int i = m_offsetY; i < (COLS + m_offsetY); i++) 
+    for (int i = m_offsets.y; i < (COLS + m_offsets.y); i++)
     {
         const auto& row = m_level_matrix[i];
 
-        for (int j = m_offsetX; j < (ROWS + m_offsetX); j++) 
+        for (int j = m_offsets.x; j < (ROWS + m_offsets.x); j++)
         {
-            m_level_map[m_level_matrix[i][j]].Add(*m_renderer, SIZEX * (j - m_offsetX), HEIGHT - (SIZEY * (i+1 - m_offsetY)));
+            if (m_level_matrix[i][j] != 0)
+            {
+                int tile_x = SIZEX * (j - m_offsets.x);
+                int tile_y = HEIGHT - (SIZEY * (i + 1 - m_offsets.y));
+                int tile_w = SIZEX;
+                int tile_h = SIZEY;
+                if ((tile_x < x) && (x < tile_x + tile_w) &&
+                    (tile_y < y) && (y < tile_y + tile_h))
+                {
+                    std::cout << "COLLIDED" << std::endl;
+                    return Position(tile_x, tile_y, tile_w, tile_h);
+                }
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+void Level::DrawMap()
+{
+    for (int i = m_offsets.y; i < (COLS + m_offsets.y); i++)
+    {
+        const auto& row = m_level_matrix[i];
+
+        for (int j = m_offsets.x; j < (ROWS + m_offsets.x); j++)
+        {
+            m_level_map[m_level_matrix[i][j]].Add(*m_renderer, SIZEX * (j - m_offsets.x), HEIGHT - (SIZEY * (i+1 - m_offsets.y)));
         }
     }
 }
@@ -107,6 +132,8 @@ void Level::Draw()
     m_bg.Add(*m_renderer, m_bgX, 0);
     m_bg.Add(*m_renderer, m_bgX + WIDTH, 0);
 
+    m_renderer->Draw(false);
+
     DrawMap();
 
     m_player->Draw(*m_renderer);
@@ -114,5 +141,5 @@ void Level::Draw()
     for (auto& enemy : m_enemies)
         enemy.Draw();
 
-    m_renderer->Draw();
+    m_renderer->Draw(false);
 }

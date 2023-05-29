@@ -33,8 +33,8 @@ public:
 	void AddRenderable(Renderable renderable, const char* id = nullptr);
 
 	void Clear();
-	void Update();
-	void Draw();
+	void Update(bool show_info);
+	void Draw(bool show_info=false);
 private:
 	class Batch
 	{

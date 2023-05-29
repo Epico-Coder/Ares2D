@@ -123,3 +123,19 @@ void UI::RenderText(Font& font, const std::string& text, float x, float y, Color
 
     m_renderer->Draw();
 }
+
+void UI::RenderButton(Button& button)
+{
+    button.m_rect.Add(*m_renderer);
+    RenderText(button.font, button.text, button.position.x, button.position.y, button.text_color);
+}
+
+Button::Button(Font& font, const std::string& text, const Position& position, const Color& text_color, const Color& button_color, std::function<void()> on_hover, std::function<void()> on_click)
+    : font(font), text(text), position(position), text_color(text_color), button_color(button_color),
+    on_hover(on_hover), on_click(on_click), m_rect(Rect(position, button_color, 0))
+{
+}
+
+void Button::default_button_event()
+{
+}

@@ -15,9 +15,12 @@
 
 #include "dependancies/glm/gtc/matrix_transform.hpp"
 
+#include <functional>
+
 const std::string resource_name = "__ui";
 
-struct Character {
+struct Character 
+{
     TextureUse texture_use;  // Texture
     glm::ivec2   Size;       // Size of glyph
     glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
@@ -39,6 +42,27 @@ protected:
     std::string m_filepath;
 };
 
+struct Button
+{
+    friend class UI;
+public:
+    Button(Font& font, const std::string& text, const Position& position, const Color& text_color, const Color& button_color,
+        std::function<void()> on_hover = default_button_event, std::function<void()> on_click = default_button_event);
+protected:
+    Rect m_rect;
+private:
+    Font& font;
+    std::string text;
+    Position position;
+    Color text_color;
+    Color button_color;
+    std::function<void()> on_hover;
+    std::function<void()> on_click;
+
+    static void default_button_event();
+
+};
+
 class UI : public Renderable
 {
 public:
@@ -50,6 +74,7 @@ public:
     std::string GetResourceID();
 
     void RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale=1.0f, float ln_width=1, float ln_height=1);
+    void RenderButton(Button& button);
 
 private:
     Renderer* m_renderer;

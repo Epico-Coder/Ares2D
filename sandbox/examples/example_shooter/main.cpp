@@ -26,65 +26,13 @@ glm::vec2 playerSize(32.0f, 32.0f);
 
 bool isJetPack = false;
 
-// Update function inside the main loop
-void Update(float deltaTime, Rect& plr)
+void example()
 {
-    // Apply gravity to the player
-    playerVelocity.y -= GRAVITY * deltaTime;
 
-    // Check for user input
-    if (USERINPUT.getIsKeyDown(GLFW_KEY_SPACE))
-    {
-        // Activate the jetpack
-        isJetPack = true;
-        playerVelocity.y += JETPACK_THRUST * deltaTime;
-    }
-    else
-    {
-        isJetPack = false;
-    }
-
-    // Control x direction
-    if (USERINPUT.getIsKeyDown(GLFW_KEY_LEFT))
-    {
-        playerVelocity.x -= PLAYER_SPEED * deltaTime;
-    }
-    else if (USERINPUT.getIsKeyDown(GLFW_KEY_RIGHT))
-    {
-        playerVelocity.x += PLAYER_SPEED * deltaTime;
-    }
-
-    // Clamp player velocity within maximum speed
-    playerVelocity.x = glm::clamp(playerVelocity.x, -PLAYER_MAX_SPEED, PLAYER_MAX_SPEED);
-    playerVelocity.y = glm::clamp(playerVelocity.y, -PLAYER_MAX_SPEED, PLAYER_MAX_SPEED);
-
-    // Update player position based on velocity
-    playerPosition += playerVelocity * deltaTime;
-
-    // Clamp player position within screen boundaries
-    if ((playerPosition.x <= 0.0f && playerVelocity.x < 0.0f) || (playerPosition.x >= WIDTH - playerSize.x && playerVelocity.x > 0.0f))
-    {
-        playerVelocity.x *= -0.25;
-    }
-    if ((playerPosition.y <= 0.0f && playerVelocity.y < 0.0f) || (playerPosition.y >= HEIGHT - playerSize.y && playerVelocity.y > 0.0f))
-    {
-        playerVelocity.y *= -0.25;
-    }
-
-    playerPosition.x = glm::clamp(playerPosition.x, 0.0f, float(WIDTH - playerSize.x));
-    playerPosition.y = glm::clamp(playerPosition.y, 0.0f, float(HEIGHT - playerSize.y));
-
-    std::cout << playerPosition.x << ", " << playerPosition.y << std::endl;
-
-    // Draw the player
-    RESOURCE.BindResource("default", 1);
-    plr.Add(RENDER, playerPosition.x, playerPosition.y);
-    RENDER.Draw();
 }
 
 int main()
 {
-
     /*-------------------------------------------------------------*/
     // Init
 
@@ -96,7 +44,8 @@ int main()
     WIN.SetBlending(true);
 
     WIN.SetCursorImage(PATH + "images/crosshairs/Outline/CrosshairsOutline01.png");
-
+    /*-------------------------------------------------------------*/
+    // Testing
 
     /*-------------------------------------------------------------*/
     // Effects
@@ -106,7 +55,8 @@ int main()
     /*-------------------------------------------------------------*/
     // Fonts
 
-    Font boh(RESOURCE, "engine/utils/ui/fonts/boh.ttf", 12);
+    Font boh(RESOURCE, "engine/utils/ui/fonts/boh.ttf", 50);
+    Button menu(boh, "MENU", Position{50, 50, 250, 100}, Color{255, 0, 0, 255}, Color{255, 255, 255, 255});
 
     /*-------------------------------------------------------------*/
     // Level setup
@@ -132,13 +82,11 @@ int main()
         lastFrameTime = currentTime;
         
         frameCount++;
+
         // If a second has passed.
         if (currentTime - previousTime >= 1.0)
         {
             fps = frameCount;
-            // Display the frame count here any way you want.
-            std::cout << frameCount << std::endl;
-
             frameCount = 0;
             previousTime = currentTime;
         }
@@ -146,16 +94,19 @@ int main()
         // Binds first Framebuffer
         ARES_VFX.Start();
         
+        auto mouse_pos = USERINPUT.getMousePos();
+
         // Clearing vertices and indices(actually this time)
         WIN.Clear(Color{ 0.0f, 153.0f, 219.0f, 1.0f });
         RENDER.Clear();
 
-        level1.Update(deltaTime);
+        level1.Update(deltaTime, glm::vec2{ mouse_pos[0], mouse_pos[1] });
         level1.Draw();
 
         // Render text
         USER.RenderText(boh, "FPS: " + std::to_string(fps), 100, 600, Color{0.98f, 0.52f, 0.26f, 0.8f}, 2);
-
+        USER.RenderButton(menu);
+        
         // Unbinds Framebuffer and draws screen wide rect
         ARES_VFX.End(RENDER);
         
