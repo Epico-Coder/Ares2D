@@ -5,6 +5,8 @@
 #include "sandbox/examples/example_shooter/Player/Player.h"
 #include "sandbox/examples/example_shooter/Enemy/Enemy.h"
 
+#include "engine/utils/input/Input.h"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -23,7 +25,7 @@ const int SIZEY = HEIGHT / COLS;
 class Level {
     friend class Player;
 public:
-    Level(Renderer* renderer, ResourceHandler* resource, InputHandler* input, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path);
+    Level(ResourceHandler* resource, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path);
 
     void AddMaterial(int matNumber, const std::string& mat_path);
     void AddEnemy(Enemy& enemy);
@@ -86,9 +88,7 @@ private:
         }
     }
 private:
-    Renderer* m_renderer;
     ResourceHandler* m_resource;
-    InputHandler* m_input;
 
     int m_level_no;
     std::vector<std::vector<int>> m_level_matrix;

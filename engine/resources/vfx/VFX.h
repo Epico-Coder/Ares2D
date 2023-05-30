@@ -36,7 +36,7 @@ public:
 
     void Start();
     void Unbind();
-    void End(Renderer& renderer);
+    void End();
     void SetNoEffect();
     void Apply(ARES_VFX_ENUM type, float x, float y, float width, float height);
 
@@ -63,7 +63,7 @@ public:
     void AddVFX(const std::string& id);
     void Start();
     void Apply(const std::string& id, ARES_VFX_ENUM type, float x, float y, float width, float height);
-    void End(Renderer& renderer);
+    void End();
 
 private:
     const float m_screen_width;

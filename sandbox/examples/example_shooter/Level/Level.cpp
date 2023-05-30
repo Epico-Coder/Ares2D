@@ -1,7 +1,7 @@
 #include "Level.h"
 
-Level::Level(Renderer* renderer, ResourceHandler* resource, InputHandler* input, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path)
-    : m_renderer(renderer), m_resource(resource), m_input(input), m_level_no(levelNumber), m_level_path(level_path)
+Level::Level(ResourceHandler* resource, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path)
+    : m_resource(resource), m_level_no(levelNumber), m_level_path(level_path)
 {
     m_resource->AddResource(std::to_string(m_level_no), 1200, 600);
     m_resource->AddShader(std::to_string(m_level_no), 1);
@@ -55,22 +55,32 @@ void Level::Update(float deltaTime, glm::vec2 mouse_pos)
     
 
     // Up or Space: Activate Jetpack
-    if ((m_input->getIsKeyDown(GLFW_KEY_UP) || m_input->getIsKeyDown(GLFW_KEY_SPACE)))
+    if ((Ares2D::Input::getIsKeyDown(GLFW_KEY_UP) || Ares2D::Input::getIsKeyDown(GLFW_KEY_SPACE)))
+    {
         m_player->ActiveJetpack();
+    }
     else
+    {
         m_player->DeactivateJetpack();
+    }
 
     // Left and Right: Dashes
-    if (m_input->getIsKeyDown(GLFW_KEY_LEFT))
+    if (Ares2D::Input::getIsKeyDown(GLFW_KEY_LEFT))
+    {
         m_player->DashLeft();
-    else if (m_input->getIsKeyDown(GLFW_KEY_RIGHT))
+    }
+    else if (Ares2D::Input::getIsKeyDown(GLFW_KEY_RIGHT))
+    {
         m_player->DashRight();
+    }
 
     // Cursor hover: Aim
     // Cursor click: Shoot
 
-    if (m_input->getisMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+    if (Ares2D::Input::getIsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+    {
         m_player->Shoot(*m_resource);
+    }
 
     // Respond to collisions
 
@@ -119,7 +129,8 @@ void Level::DrawMap()
 
         for (int j = m_offsets.x; j < (ROWS + m_offsets.x); j++)
         {
-            m_level_map[m_level_matrix[i][j]].Add(*m_renderer, SIZEX * (j - m_offsets.x), HEIGHT - (SIZEY * (i+1 - m_offsets.y)));
+            m_level_map[m_level_matrix[i][j]].SetPos(SIZEX * (j - m_offsets.x), HEIGHT - (SIZEY * (i+1 - m_offsets.y)));
+            Ares2D::Renderer::AddRenderable(m_level_map[m_level_matrix[i][j]]);
         }
     }
 }
@@ -129,17 +140,19 @@ void Level::Draw()
     m_resource->BindResource(std::to_string(m_level_no), 1);
 
     // Moving Bg
-    m_bg.Add(*m_renderer, m_bgX, 0);
-    m_bg.Add(*m_renderer, m_bgX + WIDTH, 0);
+    m_bg.SetPos(m_bgX, 0);
+    Ares2D::Renderer::AddRenderable(m_bg);
+    m_bg.SetPos(m_bgX + WIDTH, 0);
+    Ares2D::Renderer::AddRenderable(m_bg);
 
-    m_renderer->Draw(false);
+    Ares2D::Renderer::Draw();
 
     DrawMap();
 
-    m_player->Draw(*m_renderer);
+    m_player->Draw();
 
     for (auto& enemy : m_enemies)
         enemy.Draw();
 
-    m_renderer->Draw(false);
+    Ares2D::Renderer::Draw();
 }

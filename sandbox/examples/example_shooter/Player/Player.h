@@ -22,9 +22,9 @@ public:
         m_rect->SetPos(position.x, position.y);
     }
 
-    void Draw(Renderer& renderer)
+    void Draw()
     {
-        m_rect->Add(renderer);
+        Ares2D::Renderer::AddRenderable(*m_rect);
     }
 public:
     glm::vec2 size {16, 16};
@@ -42,7 +42,7 @@ public:
 
     void Update(float deltaTime, glm::vec2 mouse_pos);
 
-    void Draw(Renderer& renderer);
+    void Draw();
 
     void ActiveJetpack();
     void DeactivateJetpack();

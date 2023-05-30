@@ -133,14 +133,14 @@ void Player::Update(float deltaTime, glm::vec2 mouse_pos)
     m_rect->SetPos(position.x, position.y);
 }
 
-void Player::Draw(Renderer& renderer) 
+void Player::Draw() 
 {
-    //std::cout << "Postion: " << position.x << ", " << position.y << std::endl;
-    m_rect->Add(renderer);
+    std::cout << "Postion: " << position.x << ", " << position.y << std::endl;
+    Ares2D::Renderer::AddRenderable(*m_rect);
 
     for (auto bullet : m_bullets)
     {
-        bullet->Draw(renderer);
+        bullet->Draw();
     }
 }
 

@@ -9,39 +9,72 @@
 
 #include <string>
 
-class Window
+namespace Ares2D
 {
-public:
-	Window();
-	~Window();
+	class Window
+	{
+	public:
+		static Window& Instance();
 
-	bool Init(int width, int height, const char* title);
+		Window(Window const&) = delete;
+		void operator=(Window const&) = delete;
 
-	void Update();
+		static bool Init(int width, int height, const char* title);
+ 		
+		static void Update();
 
-	GLFWwindow* GetWindow();
+		static GLFWwindow* GetWindow();
 
-	void SetBlending(bool blending);
+		static void SetBlending(bool blending);
 
-	int getWidth();
-	int getHeight();
+		static int getWidth();
+		static int getHeight();
 
-	void SetCursorVisible();
-	void SetCursorHidden();
+		static void SetCursorVisible();
+		static void SetCursorHidden();
 
-	void SetCursorDefault();
-	void SetCursorImage(const std::string& filepath);
+		static void SetCursorDefault();
+		static void SetCursorImage(const std::string& filepath);
 
-	bool WindowOpen();
+		static bool WindowOpen();
 
-	void Clear(Color color);
+		static void Clear(Color color);
 
-	void SwapBuffers();
-	void PollEvents();
-	void Terminate();
-private:
-	GLFWwindow* m_Window;
+		static void SwapBuffers();
+		static void PollEvents();
+		static void Terminate();
+	private:
+		Window();
+		~Window();
+	private:
+		bool i_Init(int width, int height, const char* title);
 
-	int m_width;
-	int m_height;
+		void i_Update();
+
+		GLFWwindow* i_GetWindow();
+
+		void i_SetBlending(bool blending);
+
+		int i_getWidth();
+		int i_getHeight();
+
+		void i_SetCursorVisible();
+		void i_SetCursorHidden();
+
+		void i_SetCursorDefault();
+		void i_SetCursorImage(const std::string& filepath);
+
+		bool i_WindowOpen();
+
+		void i_Clear(Color color);
+
+		void i_SwapBuffers();
+		void i_PollEvents();
+		void i_Terminate();
+	private:
+		GLFWwindow* m_Window;
+
+		int m_width;
+		int m_height;
+	};
 };

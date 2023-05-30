@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include "dependancies/glew/include/GL/glew.h"
 #include "dependancies/glfw/include/GLFW/glfw3.h"
 #include "dependancies/glm/glm.hpp"
@@ -36,9 +34,8 @@
 
 #include "engine/resources/vfx/VFX.h"
 
-#include "engine/Control.h"
-
 #include <Windows.h>
+#include <iostream>
 
 #define ARES_TRUE 1
 #define ARES_FALSE 0
@@ -51,11 +48,6 @@
 
 namespace Ares2D
 {
-    // Main
-    static Window WIN;
-    static Renderer RENDER;
-    static InputHandler USERINPUT;
-
     // Rendering
     static AudioHandler AUDIO;
 
@@ -64,24 +56,27 @@ namespace Ares2D
     static VFXHandler ARES_VFX(1280.0f, 720.0f);
 
     // Help
-    static UI USER(&RENDER, &RESOURCE);
+    static UI USER(&RESOURCE);
     // static PhysicsHandler PHYSICS;
     // static Time CLOCK;
     // static Math MATH;
 
-    static Control Init(int width, int height, const char* title)
+    static void Init(int width, int height, const char* title)
     {
         if (!glfwInit())
-            std::cout << "Error 1 while Initialization" << std::endl;
-        if (!WIN.Init(width, height, title))
-            std::cout << "Error 3 while Initialization" << std::endl;
+        {
+            std::cout << "GLFW not initialized!" << std::endl;
+        }
+        if (Ares2D::Window::Init(width, height, title) == ARES_FALSE)
+        {
+            std::cout << "Window not initialized!" << std::endl;
+        }
         if (glewInit() != GLEW_OK)
-            std::cout << "Error 2 while Initialization" << std::endl;
-
-        RENDER.Init(1000);
-        USERINPUT.Init(WIN.GetWindow());
+        {
+            std::cout << "GLEW not initialized!" << std::endl;
+        }
+       
+        Ares2D::Renderer::Init(10000);
         USER.Init();
-
-        return Control(&WIN, &RENDER);
     }
 };

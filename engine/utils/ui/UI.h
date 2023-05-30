@@ -66,7 +66,7 @@ private:
 class UI : public Renderable
 {
 public:
-    UI(Renderer* renderer, ResourceHandler* resource_handler);
+    UI(ResourceHandler* resource_handler);
 	~UI();
 
     void Init();
@@ -77,7 +77,6 @@ public:
     void RenderButton(Button& button);
 
 private:
-    Renderer* m_renderer;
     ResourceHandler* m_rh;
 
     Shader m_shader;

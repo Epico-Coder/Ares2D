@@ -65,14 +65,13 @@ std::string Font::GetFilepath()
     return m_filepath;
 }
 
-UI::UI(Renderer* renderer, ResourceHandler* resource_handler)
-    : m_renderer(renderer), m_rh(resource_handler)
+UI::UI(ResourceHandler* resource_handler)
+    : m_rh(resource_handler)
 {
 }
 
 UI::~UI()
 {
-    delete(m_renderer);
 }
 
 void UI::Init()
@@ -115,18 +114,18 @@ void UI::RenderText(Font& font, const std::string& text, float x, float y, Color
 
         // Render glyph texture over quad
         Rect fuck(Position{ xpos,ypos,w,h }, text_color, ch.texture_use);
-        fuck.Add(*m_renderer);
+        Ares2D::Renderer::AddRenderable(fuck);
 
         // Move to the next character position
         currentX += ((ch.Advance >> 6) * scale) + ln_width;
     }
 
-    m_renderer->Draw();
+    Ares2D::Renderer::Draw(true);
 }
 
 void UI::RenderButton(Button& button)
 {
-    button.m_rect.Add(*m_renderer);
+    Ares2D::Renderer::AddRenderable(button.m_rect);
     RenderText(button.font, button.text, button.position.x, button.position.y, button.text_color);
 }
 

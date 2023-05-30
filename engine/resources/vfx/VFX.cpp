@@ -67,7 +67,7 @@ void VFX::Unbind()
     m_fbo.Unbind();
 }
 
-void VFX::End(Renderer& renderer)
+void VFX::End()
 {
     m_vao.Bind();
     m_shader.Bind();
@@ -164,7 +164,7 @@ void VFXHandler::Apply(const std::string& id, ARES_VFX_ENUM type, float x, float
     }
 }
 
-void VFXHandler::End(Renderer& renderer)
+void VFXHandler::End()
 {
     auto currentIter = m_VFXs.begin();
 
@@ -186,7 +186,7 @@ void VFXHandler::End(Renderer& renderer)
             nextIter->second->Start();
         }
 
-        currentIter->second->End(renderer);
+        currentIter->second->End();
 
         currentIter = nextIter;
     }

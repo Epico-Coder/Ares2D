@@ -15,9 +15,6 @@ public:
 	Rect(Vertex v1, Vertex v2, Vertex v3, Vertex v4);
 	~Rect();
 
-	void Add(Renderer& renderer);
-	void Add(Renderer& renderer, int x, int y);
-
 	Position GetPos();
 	void SetPos(int x, int y);
 

@@ -142,17 +142,6 @@ Rect::~Rect()
 {
 }
 
-void Rect::Add(Renderer& renderer)
-{
-	renderer.AddRenderable(*this);
-}
-
-void Rect::Add(Renderer& renderer, int x, int y)
-{
-	SetPos(x, y);
-	renderer.AddRenderable(*this);
-}
-
 Position Rect::GetPos()
 {
 	return m_position;
