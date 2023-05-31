@@ -181,10 +181,10 @@ TextureUse TextureAtlas::AddTexture(const std::string& filepath, const std::stri
 
 
 	std::vector<std::pair<float, float>> outTextureCords{ {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f} };
-	outTextureCords[0].first = (m_xoffset - width) / m_width; outTextureCords[0].second = 1.0f - ((m_yoffset + height) / m_height);
-	outTextureCords[1].first = (m_xoffset        ) / m_width; outTextureCords[1].second = 1.0f - ((m_yoffset + height) / m_height);
-	outTextureCords[2].first = (m_xoffset        ) / m_width; outTextureCords[2].second = 1.0f - ((m_yoffset		 ) / m_height);
-	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1.0f - ((m_yoffset		 ) / m_height);
+	outTextureCords[0].first = (m_xoffset - width) / m_width; outTextureCords[0].second = 1 - ((m_yoffset + height) / m_height);
+	outTextureCords[1].first = (m_xoffset        ) / m_width; outTextureCords[1].second = 1 - ((m_yoffset + height) / m_height);
+	outTextureCords[2].first = (m_xoffset        ) / m_width; outTextureCords[2].second = 1 - ((m_yoffset		 ) / m_height);
+	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1 - ((m_yoffset		 ) / m_height);
 
 	return TextureUse{ outTextureCords, m_ID, th_name };
 }

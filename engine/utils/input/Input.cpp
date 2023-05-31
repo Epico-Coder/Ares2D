@@ -1,21 +1,22 @@
 #include "Input.h"
 
+#include <iostream>
 #include <algorithm>
 
 namespace Ares2D
 {
 
-    /*-------------------------- Public Functions --------------------------*/
-
     Input::Input()
-        : m_isEnabled(true), m_text(""), m_mouse_pos({0, 0}), m_cursor_entered(false), m_scroll({0, 0})
+        : m_isEnabled(true), m_text(""), m_mouse_pos({ 0, 0 }), m_cursor_entered(false), m_scroll({ 0, 0 })
     {
         setupInputs();
     }
 
-    Input::~Input() 
+    Input::~Input()
     {
     }
+
+    /*-------------------------- Public Functions --------------------------*/
 
     Input& Input::Instance()
     {
@@ -168,12 +169,14 @@ namespace Ares2D
 
     void Input::setupInputs()
     {
+        GLFWwindow* win = Ares2D::Window::GetWindow();
+
         // set inputs only for main window
-        glfwSetKeyCallback(Ares2D::Window::GetWindow(), key_callback);
-        glfwSetCharCallback(Ares2D::Window::GetWindow(), char_callback);
-        glfwSetCursorPosCallback(Ares2D::Window::GetWindow(), cursor_pos_callback);
-        glfwSetMouseButtonCallback(Ares2D::Window::GetWindow(), mouse_button_callback);
-        glfwSetCursorEnterCallback(Ares2D::Window::GetWindow(), cursor_enter_callback);
-        glfwSetScrollCallback(Ares2D::Window::GetWindow(), scroll_callback);
+        glfwSetKeyCallback(win, key_callback);
+        glfwSetCharCallback(win, char_callback);
+        glfwSetCursorPosCallback(win, cursor_pos_callback);
+        glfwSetMouseButtonCallback(win, mouse_button_callback);
+        glfwSetCursorEnterCallback(win, cursor_enter_callback);
+        glfwSetScrollCallback(win, scroll_callback);
     }
 };

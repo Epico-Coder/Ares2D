@@ -46,7 +46,7 @@ namespace Ares2D
 
 		void i_DrawTestTriangle(float x, float y, float size);
 
-		void i_AddRenderable(Renderable renderable, const char* id = nullptr);
+		void i_AddRenderable(Renderable& renderable, const char* id = nullptr);
 
 		void i_Clear();
 		void i_Update(bool show_info);
@@ -70,8 +70,6 @@ namespace Ares2D
 			void Draw();
 		private:
 			unsigned int m_BatchSize;
-
-			//std::vector<Renderable> m_Geometries;
 
 			std::vector<float> m_vertices;
 			std::vector<unsigned int> m_indices;

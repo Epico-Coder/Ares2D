@@ -1,160 +1,243 @@
 #include "Audio.h"
 
-AudioHandler::AudioHandler()
+namespace Ares2D
 {
-    result = FMOD::System_Create(&m_system);
-    result = m_system->init(32, FMOD_INIT_NORMAL, 0);
-}
-
-AudioHandler::~AudioHandler()
-{
-}
-
-void AudioHandler::add(const std::string& filePath, int audioID)
-{
-    m_audios[audioID] = new Audio(m_system, filePath);
-}
-
-void AudioHandler::remove(int audioID)
-{
-    auto iter = m_audios.find(audioID);
-    if (iter == m_audios.end()) {
-        std::cout << "Audio with ID " << audioID << " does not exist" << std::endl;
-    }
-    else
+    Audio::Audio()
     {
-        m_audios.erase(iter);
+        result = FMOD::System_Create(&m_system);
+
+        if (result != FMOD_OK) 
+        {
+            std::cout << "FMOD error! " << result << ": " << FMOD_RESULT(result) << std::endl;
+        }
+
+        result = m_system->init(32, FMOD_INIT_NORMAL, 0);
+
+        if (result != FMOD_OK)
+        {
+            std::cout << "FMOD error! " << result << ": " << FMOD_RESULT(result) << std::endl;
+        }
     }
-}
 
-void AudioHandler::play(int audioID, bool loop)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        audio->second->play();
+    Audio::~Audio()
+    {
+        result = m_system->release();
+
+        if (result != FMOD_OK)
+        {
+            std::cout << "FMOD error! " << result << ": " << FMOD_RESULT(result) << std::endl;
+        }
     }
-}
 
-void AudioHandler::pause(int audioID)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        audio->second->pause();
+    /*-------------------------- Public Functions --------------------------*/
+
+    Audio& Audio::Instance()
+    {
+        static Audio instance;
+        return instance;
     }
-}
 
-void AudioHandler::resume(int audioID)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        audio->second->resume();
+    void Audio::add(const std::string& filePath, int audioID)
+    {
+        Instance().i_add(filePath, audioID);
     }
-}
 
-bool AudioHandler::isPlaying(int audioID)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        return audio->second->isPlaying();
+    void Audio::remove(int audioID)
+    {
+        Instance().i_remove(audioID);
     }
-    return false;
-}
 
-void AudioHandler::fadeOut(int audioID, int fadeTimeMs)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        audio->second->fadeOut();
+    void Audio::play(int audioID, bool loop)
+    {
+        Instance().i_play(audioID, loop);
     }
-}
 
-void AudioHandler::setTime(int audioID, unsigned int timeMs)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        audio->second->setTime(timeMs);
+    void Audio::pause(int audioID)
+    {
+        Instance().i_pause(audioID);
     }
-}
 
-unsigned int AudioHandler::getTime(int audioID)
-{
-    auto audio = m_audios.find(audioID);
-    if (audio != m_audios.end()) {
-        return audio->second->getTime();
+    void Audio::resume(int audioID)
+    {
+        Instance().i_resume(audioID);
     }
-}
 
-
-AudioHandler::Audio::Audio(FMOD::System* system, const std::string& filePath) {
-    m_system = system;
-    m_system->createSound(filePath.c_str(), FMOD_DEFAULT, 0, &m_sound);
-    m_sound->getLength(&m_length, FMOD_TIMEUNIT_MS);
-}
-
-AudioHandler::Audio::~Audio()
-{
-    m_sound->release();
-    m_channel->stop();
-}
-
-void AudioHandler::Audio::play() {
-    if (m_channel == nullptr) {
-        FMOD_RESULT result = m_sound->setMode(FMOD_LOOP_NORMAL);
-        result = m_system->playSound(m_sound, 0, false, &m_channel);
-        
-        // temporary set volume to retain ears
-        //m_channel->setVolume(0.1f);
+    bool Audio::isPlaying(int audioID)
+    {
+        return Instance().i_isPlaying(audioID);
     }
-    else {
-        m_channel->setPaused(false);
-        m_isPaused = false;
-    }
-}
 
-void AudioHandler::Audio::pause() {
-    if (m_channel != nullptr) {
-        m_channel->setPaused(true);
-        m_isPaused = true;
+    void Audio::fadeOut(int audioID, int fadeTimeMs)
+    {
+        Instance().i_fadeOut(audioID, fadeTimeMs);
     }
-}
 
-void AudioHandler::Audio::resume() {
-    if (m_channel != nullptr) {
-        m_channel->setPaused(false);
-        m_isPaused = false;
+    void Audio::setTime(int audioID, unsigned int timeMs)
+    {
+        Instance().i_setTime(audioID, timeMs);
     }
-}
 
-bool AudioHandler::Audio::isPlaying() {
-    if (m_channel != nullptr) {
-        bool isPlaying = false;
-        m_channel->isPlaying(&isPlaying);
-        return isPlaying && !m_isPaused;
+    unsigned int Audio::getTime(int audioID)
+    {
+        return Instance().i_getTime(audioID);
     }
-    return false;
-}
 
-void AudioHandler::Audio::fadeOut(int fadeTimeMs) {
-    if (m_channel != nullptr && !m_isFadingOut) {
-        m_isFadingOut = true;
-        unsigned int position;
-        m_channel->setFadePointRamp(0, 0.0f);
-        m_channel->setDelay(m_channel->getPosition(&position, FMOD_TIMEUNIT_MS), fadeTimeMs, true);
-        m_channel->setPaused(true);
-    }
-}
+    /*-------------------------- Internal Functions --------------------------*/
 
-void AudioHandler::Audio::setTime(unsigned int timeMs) {
-    if (m_channel != nullptr) {
-        FMOD_RESULT result = m_channel->setPosition(timeMs, FMOD_TIMEUNIT_MS);
+    void Audio::i_add(const std::string& filePath, int audioID)
+    {
+        m_audios[audioID] = new Audio_Element(m_system, filePath);
     }
-}
 
-unsigned int AudioHandler::Audio::getTime() {
-    if (m_channel != nullptr) {
-        unsigned int timeMs = 0;
-        m_channel->getPosition(&timeMs, FMOD_TIMEUNIT_MS);
-        return timeMs;
+    void Audio::i_remove(int audioID)
+    {
+        auto iter = m_audios.find(audioID);
+        if (iter == m_audios.end()) {
+            std::cout << "Audio with ID " << audioID << " does not exist" << std::endl;
+        }
+        else
+        {
+            m_audios.erase(iter);
+        }
     }
-    return 0;
-}
+
+    void Audio::i_play(int audioID, bool loop)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            audio->second->play();
+        }
+    }
+
+    void Audio::i_pause(int audioID)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            audio->second->pause();
+        }
+    }
+
+    void Audio::i_resume(int audioID)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            audio->second->resume();
+        }
+    }
+
+    bool Audio::i_isPlaying(int audioID)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            return audio->second->isPlaying();
+        }
+        return false;
+    }
+
+    void Audio::i_fadeOut(int audioID, int fadeTimeMs)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            audio->second->fadeOut();
+        }
+    }
+
+    void Audio::i_setTime(int audioID, unsigned int timeMs)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            audio->second->setTime(timeMs);
+        }
+    }
+
+    unsigned int Audio::i_getTime(int audioID)
+    {
+        auto audio = m_audios.find(audioID);
+        if (audio != m_audios.end()) {
+            return audio->second->getTime();
+        }
+    }
+
+    /*-------------------------- Child Functions --------------------------*/
+
+    Audio::Audio_Element::Audio_Element(FMOD::System* system, const std::string& filePath) {
+        m_system = system;
+        m_system->createSound(filePath.c_str(), FMOD_DEFAULT, 0, &m_sound);
+        m_sound->getLength(&m_length, FMOD_TIMEUNIT_MS);
+    }
+
+    Audio::Audio_Element::~Audio_Element()
+    {
+        m_sound->release();
+        m_channel->stop();
+    }
+
+    void Audio::Audio_Element::play()
+    {
+        if (m_channel == nullptr) {
+            FMOD_RESULT result = m_sound->setMode(FMOD_LOOP_NORMAL);
+            result = m_system->playSound(m_sound, 0, false, &m_channel);
+
+            // temporary set volume to retain ears
+            //m_channel->setVolume(0.1f);
+        }
+        else {
+            m_channel->setPaused(false);
+            m_isPaused = false;
+        }
+    }
+
+    void Audio::Audio_Element::pause()
+    {
+        if (m_channel != nullptr) {
+            m_channel->setPaused(true);
+            m_isPaused = true;
+        }
+    }
+
+    void Audio::Audio_Element::resume()
+    {
+        if (m_channel != nullptr) {
+            m_channel->setPaused(false);
+            m_isPaused = false;
+        }
+    }
+
+    bool Audio::Audio_Element::isPlaying()
+    {
+        if (m_channel != nullptr) {
+            bool isPlaying = false;
+            m_channel->isPlaying(&isPlaying);
+            return isPlaying && !m_isPaused;
+        }
+        return false;
+    }
+
+    void Audio::Audio_Element::fadeOut(int fadeTimeMs)
+    {
+        if (m_channel != nullptr && !m_isFadingOut) {
+            m_isFadingOut = true;
+            unsigned int position;
+            m_channel->setFadePointRamp(0, 0.0f);
+            m_channel->setDelay(m_channel->getPosition(&position, FMOD_TIMEUNIT_MS), fadeTimeMs, true);
+            m_channel->setPaused(true);
+        }
+    }
+
+    void Audio::Audio_Element::setTime(unsigned int timeMs)
+    {
+        if (m_channel != nullptr) {
+            FMOD_RESULT result = m_channel->setPosition(timeMs, FMOD_TIMEUNIT_MS);
+        }
+    }
+
+    unsigned int Audio::Audio_Element::getTime()
+    {
+        if (m_channel != nullptr) {
+            unsigned int timeMs = 0;
+            m_channel->getPosition(&timeMs, FMOD_TIMEUNIT_MS);
+            return timeMs;
+        }
+        return 0;
+    }
+};

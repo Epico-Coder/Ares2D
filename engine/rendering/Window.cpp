@@ -60,12 +60,12 @@ namespace Ares2D
 
     int Window::getWidth()
     {
-        return Instance().getWidth();
+        return Instance().i_getWidth();
     }
 
     int Window::getHeight()
     {
-        return Instance().getHeight();
+        return Instance().i_getHeight();
     }
 
     void Window::SetCursorVisible()

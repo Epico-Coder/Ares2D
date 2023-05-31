@@ -31,7 +31,6 @@
 #include "engine/utils/math/Math.h"
 #include "engine/utils/color/Color.h"
 
-
 #include "engine/resources/vfx/VFX.h"
 
 #include <Windows.h>
@@ -48,19 +47,6 @@
 
 namespace Ares2D
 {
-    // Rendering
-    static AudioHandler AUDIO;
-
-    static ResourceHandler RESOURCE;
-
-    static VFXHandler ARES_VFX(1280.0f, 720.0f);
-
-    // Help
-    static UI USER(&RESOURCE);
-    // static PhysicsHandler PHYSICS;
-    // static Time CLOCK;
-    // static Math MATH;
-
     static void Init(int width, int height, const char* title)
     {
         if (!glfwInit())
@@ -77,6 +63,6 @@ namespace Ares2D
         }
        
         Ares2D::Renderer::Init(10000);
-        USER.Init();
+        Ares2D::UI::Init();
     }
 };

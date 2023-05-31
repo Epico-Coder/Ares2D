@@ -1,306 +1,401 @@
 #include "Resource.h"
 
-Resource::Resource(const std::string& resourceID, int tex_width, int tex_height)
-	: m_th(tex_width, tex_height, resourceID)
+namespace Ares2D
 {
-	m_th.Init();
-}
-
-Resource::~Resource()
-{
-}
-
-TextureUse Resource::AddTexture(const std::string& filepath, float scale)
-{
-	return m_th.AddTexture(filepath, scale);
-}
-
-TextureUse Resource::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
-{
-	return m_th.AddTexture(sformat, dformat, width, height, data);
-}
-
-void Resource::AddShader(const std::string& vert_file_path, const std::string& frag_file_path, int shaderID)
-{
-	m_sh.AddShader(vert_file_path, frag_file_path, shaderID);
-}
-
-TextureUse Resource::FullTexture(int atlasID)
-{
-	return m_th.FullTexture(atlasID);
-}
-
-void Resource::BindShader(int shaderID)
-{
-	m_sh.BindShader(shaderID);
-}
-
-void Resource::BindTexture()
-{
-	m_th.Bind();
-}
-
-void Resource::SetUniform1i(int shaderID, const std::string& name, int v1)
-{
-	m_sh.SetUniform1f(shaderID, name, v1);
-}
-
-void Resource::SetUniform1iv(int shaderID, const std::string& name, unsigned int count, int v1[])
-{
-	m_sh.SetUniform1iv(shaderID, name, count, v1);
-}
-
-void Resource::SetUniform1f(int shaderID, const std::string& name, float v1)
-{
-	m_sh.SetUniform1f(shaderID, name, v1);
-}
-
-void Resource::SetUniform2fv(int shaderID, const std::string& name, const glm::vec2& vec)
-{
-	m_sh.SetUniform2fv(shaderID, name, vec);
-}
-
-void Resource::SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3)
-{
-	m_sh.SetUniform3f(shaderID, name, v1, v2, v3);
-}
-
-void Resource::SetUniform4i(int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
-{
-	m_sh.SetUniform4i(shaderID, name, v1, v2, v3, v4);
-}
-
-void Resource::SetUniform4f(int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
-{
-	m_sh.SetUniform4f(shaderID, name, v1, v2, v3, v4);
-}
-
-void Resource::SetUniform4fv(int shaderID, const std::string& name, const glm::vec4& vec)
-{
-	m_sh.SetUniform4fv(shaderID, name, vec);
-}
-
-void Resource::SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix)
-{
-	m_sh.SetUniformMat4f(shaderID, name, matrix);
-}
-
-ResourceHandler::ResourceHandler()
-{
-}
-
-ResourceHandler::~ResourceHandler()
-{
-	for (auto it : m_resources)
+	Resource::Resource()
 	{
-		delete(it.second);
 	}
-}
 
-void ResourceHandler::AddResource(const std::string& resourceID, int tex_width, int tex_height)
-{
-	if (m_resources.find(resourceID) == m_resources.end()) 
+	Resource::~Resource()
 	{
-		m_resources[resourceID] = new Resource(resourceID, tex_width, tex_height);
+		for (auto it : m_resources)
+		{
+			delete(it.second);
+		}
 	}
-	else 
-	{
-		std::cout << "Resource" << resourceID << "already created" << std::endl;
-	}
-}
 
-TextureUse ResourceHandler::AddTexture(const std::string& resourceID, const std::string& filepath, float scale)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end()) 
-	{
-		return it->second->AddTexture(filepath, scale);
-	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
+	/*-------------------------- Public Functions --------------------------*/
 
-TextureUse ResourceHandler::AddTexture(const std::string& resourceID, GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end()) 
+	Resource& Resource::Instance()
 	{
-		return it->second->AddTexture(sformat, dformat, width, height, data);
+		static Resource instance;
+		return instance;
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::AddShader(const std::string& resourceID, int shaderID, const std::string& vert_file_path, const std::string& frag_file_path)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end()) 
+	void Resource::AddResource(const std::string& resourceID, int tex_width, int tex_height)
 	{
-		it->second->AddShader(vert_file_path, frag_file_path, shaderID);
+		Instance().i_AddResource(resourceID, tex_width, tex_height);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::BindResource(const std::string& resourceID, int shaderID)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::BindResource(const std::string& resourceID, int shaderID)
 	{
-		it->second->BindShader(shaderID);
-		it->second->BindTexture();
+		Instance().i_BindResource(resourceID, shaderID);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-TextureUse ResourceHandler::FullTexture(const std::string& resourceID, int atlasID)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::RemoveResource(const std::string& resourceID)
 	{
-		return it->second->FullTexture(atlasID);
+		Instance().i_RemoveResource(resourceID);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform1i(const std::string& resourceID, int shaderID, const std::string& name, int v1)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	TextureUse Resource::AddTexture(const std::string& resourceID, const std::string& filepath, float scale)
 	{
-		it->second->SetUniform1i(shaderID, name, v1);
+		return Instance().i_AddTexture(resourceID, filepath, scale);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform1iv(const std::string& resourceID, int shaderID, const std::string& name, unsigned int count, int v1[])
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	TextureUse Resource::AddTexture(const std::string& resourceID, GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
 	{
-		it->second->SetUniform1iv(shaderID, name, count, v1);
+		return Instance().i_AddTexture(resourceID, sformat, dformat, width, height, data);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform1f(const std::string& resourceID, int shaderID, const std::string& name, float v1)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	TextureUse Resource::FullTexture(const std::string& resourceID, int atlasID)
 	{
-		it->second->SetUniform1f(shaderID, name, v1);
+		return Instance().i_FullTexture(resourceID, atlasID);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform2fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec2& vec)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::AddShader(const std::string& resourceID, int shaderID, const std::string& vert_file_path, const std::string& frag_file_path)
 	{
-		it->second->SetUniform2fv(shaderID, name, vec);
+		Instance().i_AddShader(resourceID, shaderID, vert_file_path, frag_file_path);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform3f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::SetUniform1i(const std::string& resourceID, int shaderID, const std::string& name, int v1)
 	{
-		it->second->SetUniform3f(shaderID, name, v1, v2, v3);
+		Instance().i_SetUniform1i(resourceID, shaderID, name, v1);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform4i(const std::string& resourceID, int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::SetUniform1iv(const std::string& resourceID, int shaderID, const std::string& name, unsigned int count, int v1[])
 	{
-		it->second->SetUniform4i(shaderID, name, v1, v2, v3, v4);
+		Instance().i_SetUniform1iv(resourceID, shaderID, name, count, v1);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform4f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::SetUniform1f(const std::string& resourceID, int shaderID, const std::string& name, float v1)
 	{
-		it->second->SetUniform4f(shaderID, name, v1, v2, v3, v4);
+		Instance().i_SetUniform1f(resourceID, shaderID, name, v1);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniform4fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec4& vec)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::SetUniform2fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec2& vec)
 	{
-		it->second->SetUniform4fv(shaderID, name, vec);
+		Instance().i_SetUniform2fv(resourceID, shaderID, name, vec);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::SetUniformMat4f(const std::string& resourceID, int shaderID, const std::string& name, const glm::mat4& matrix)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end())
+	void Resource::SetUniform3f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3)
 	{
-		it->second->SetUniformMat4f(shaderID, name, matrix);
+		Instance().i_SetUniform3f(resourceID, shaderID, name, v1, v2, v3);
 	}
-	else
-	{
-		std::cout << "No resource called: " << resourceID << std::endl;
-	}
-}
 
-void ResourceHandler::RemoveResource(const std::string& resourceID)
-{
-	auto it = m_resources.find(resourceID);
-	if (it != m_resources.end()) 
+	void Resource::SetUniform4i(const std::string& resourceID, int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
 	{
-		m_resources.erase(it);
+		Instance().i_SetUniform4i(resourceID, shaderID, name, v1, v2, v3, v4);
 	}
-	else
+
+	void Resource::SetUniform4f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
 	{
-		std::cout << "No resource called: " << resourceID << std::endl;
+		Instance().i_SetUniform4f(resourceID, shaderID, name, v1, v2, v3, v4);
 	}
-}
+
+	void Resource::SetUniform4fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec4& vec)
+	{
+		Instance().i_SetUniform4fv(resourceID, shaderID, name, vec);
+	}
+
+	void Resource::SetUniformMat4f(const std::string& resourceID, int shaderID, const std::string& name, const glm::mat4& matrix)
+	{
+		Instance().i_SetUniformMat4f(resourceID, shaderID, name, matrix);
+	}
+
+	/*-------------------------- Internal Functions --------------------------*/
+
+	void Resource::i_AddResource(const std::string& resourceID, int tex_width, int tex_height)
+	{
+		if (m_resources.find(resourceID) == m_resources.end())
+		{
+			m_resources[resourceID] = new Resource_Element(resourceID, tex_width, tex_height);
+		}
+		else
+		{
+			std::cout << "Resource" << resourceID << "already created" << std::endl;
+		}
+	}
+
+	TextureUse Resource::i_AddTexture(const std::string& resourceID, const std::string& filepath, float scale)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			return it->second->AddTexture(filepath, scale);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	TextureUse Resource::i_AddTexture(const std::string& resourceID, GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			return it->second->AddTexture(sformat, dformat, width, height, data);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_AddShader(const std::string& resourceID, int shaderID, const std::string& vert_file_path, const std::string& frag_file_path)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->AddShader(vert_file_path, frag_file_path, shaderID);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_BindResource(const std::string& resourceID, int shaderID)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->BindShader(shaderID);
+			it->second->BindTexture();
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	TextureUse Resource::i_FullTexture(const std::string& resourceID, int atlasID)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			return it->second->FullTexture(atlasID);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform1i(const std::string& resourceID, int shaderID, const std::string& name, int v1)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform1i(shaderID, name, v1);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform1iv(const std::string& resourceID, int shaderID, const std::string& name, unsigned int count, int v1[])
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform1iv(shaderID, name, count, v1);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform1f(const std::string& resourceID, int shaderID, const std::string& name, float v1)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform1f(shaderID, name, v1);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform2fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec2& vec)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform2fv(shaderID, name, vec);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform3f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform3f(shaderID, name, v1, v2, v3);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform4i(const std::string& resourceID, int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform4i(shaderID, name, v1, v2, v3, v4);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform4f(const std::string& resourceID, int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform4f(shaderID, name, v1, v2, v3, v4);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniform4fv(const std::string& resourceID, int shaderID, const std::string& name, const glm::vec4& vec)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniform4fv(shaderID, name, vec);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_SetUniformMat4f(const std::string& resourceID, int shaderID, const std::string& name, const glm::mat4& matrix)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			it->second->SetUniformMat4f(shaderID, name, matrix);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	void Resource::i_RemoveResource(const std::string& resourceID)
+	{
+		auto it = m_resources.find(resourceID);
+		if (it != m_resources.end())
+		{
+			m_resources.erase(it);
+		}
+		else
+		{
+			std::cout << "No resource called: " << resourceID << std::endl;
+		}
+	}
+
+	/*-------------------------- Child Functions --------------------------*/
+
+	Resource::Resource_Element::Resource_Element(const std::string& resourceID, int tex_width, int tex_height)
+		: m_th(tex_width, tex_height, resourceID)
+	{
+		m_th.Init();
+	}
+
+	Resource::Resource_Element::~Resource_Element()
+	{
+	}
+
+	TextureUse Resource::Resource_Element::AddTexture(const std::string& filepath, float scale)
+	{
+		return m_th.AddTexture(filepath, scale);
+	}
+
+	TextureUse Resource::Resource_Element::AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data)
+	{
+		return m_th.AddTexture(sformat, dformat, width, height, data);
+	}
+
+	void Resource::Resource_Element::AddShader(const std::string& vert_file_path, const std::string& frag_file_path, int shaderID)
+	{
+		m_sh.AddShader(vert_file_path, frag_file_path, shaderID);
+	}
+
+	TextureUse Resource::Resource_Element::FullTexture(int atlasID)
+	{
+		return m_th.FullTexture(atlasID);
+	}
+
+	void Resource::Resource_Element::BindShader(int shaderID)
+	{
+		m_sh.BindShader(shaderID);
+	}
+
+	void Resource::Resource_Element::BindTexture()
+	{
+		m_th.Bind();
+	}
+
+	void Resource::Resource_Element::SetUniform1i(int shaderID, const std::string& name, int v1)
+	{
+		m_sh.SetUniform1f(shaderID, name, v1);
+	}
+
+	void Resource::Resource_Element::SetUniform1iv(int shaderID, const std::string& name, unsigned int count, int v1[])
+	{
+		m_sh.SetUniform1iv(shaderID, name, count, v1);
+	}
+
+	void Resource::Resource_Element::SetUniform1f(int shaderID, const std::string& name, float v1)
+	{
+		m_sh.SetUniform1f(shaderID, name, v1);
+	}
+
+	void Resource::Resource_Element::SetUniform2fv(int shaderID, const std::string& name, const glm::vec2& vec)
+	{
+		m_sh.SetUniform2fv(shaderID, name, vec);
+	}
+
+	void Resource::Resource_Element::SetUniform3f(int shaderID, const std::string& name, float v1, float v2, float v3)
+	{
+		m_sh.SetUniform3f(shaderID, name, v1, v2, v3);
+	}
+
+	void Resource::Resource_Element::SetUniform4i(int shaderID, const std::string& name, int v1, int v2, int v3, int v4)
+	{
+		m_sh.SetUniform4i(shaderID, name, v1, v2, v3, v4);
+	}
+
+	void Resource::Resource_Element::SetUniform4f(int shaderID, const std::string& name, float v1, float v2, float v3, float v4)
+	{
+		m_sh.SetUniform4f(shaderID, name, v1, v2, v3, v4);
+	}
+
+	void Resource::Resource_Element::SetUniform4fv(int shaderID, const std::string& name, const glm::vec4& vec)
+	{
+		m_sh.SetUniform4fv(shaderID, name, vec);
+	}
+
+	void Resource::Resource_Element::SetUniformMat4f(int shaderID, const std::string& name, const glm::mat4& matrix)
+	{
+		m_sh.SetUniformMat4f(shaderID, name, matrix);
+	}
+};

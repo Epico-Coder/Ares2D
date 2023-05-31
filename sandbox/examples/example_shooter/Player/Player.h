@@ -7,10 +7,10 @@
 
 class Bullet {
 public:
-    Bullet(ResourceHandler& resource, int levelNumber, glm::vec2 startPos, float angle)
+    Bullet(int levelNumber, glm::vec2 startPos, float angle)
         : position(startPos)
     {
-        TextureUse t_bullet = resource.AddTexture(std::to_string(levelNumber), "sandbox/examples/example_shooter/images/bullet.png");
+        TextureUse t_bullet = Ares2D::Resource::AddTexture(std::to_string(levelNumber), "sandbox/examples/example_shooter/images/bullet.png");
         m_rect = new Rect(Position{ startPos.x, startPos.y, size.x, size.y }, ARES_NO_COLOR, t_bullet);
         m_rect->SetAngle(angle);
         velocity *= glm::vec2(cos(angle), sin(-angle));
@@ -36,7 +36,7 @@ public:
 class Player {
     friend class Level;
 public:
-    Player(ResourceHandler& resource, int levelNumber, const std::string& player_path, std::function<std::optional<Position>(int, int, int, int)> collision_func);
+    Player(int levelNumber, const std::string& player_path, std::function<std::optional<Position>(int, int, int, int)> collision_func);
 
     void Move(float dx, float dy);
 
@@ -50,7 +50,7 @@ public:
     void DashLeft();
     void DashRight();
 
-    void Shoot(ResourceHandler& resource);
+    void Shoot();
 private:
     Rect* m_rect;
 

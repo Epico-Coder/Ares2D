@@ -15,4 +15,3 @@ struct Position
 class Math
 {
 };
-

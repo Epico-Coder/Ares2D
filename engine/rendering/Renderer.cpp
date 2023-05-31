@@ -15,6 +15,8 @@ namespace Ares2D
 			delete(batch);
 	}
 
+	/*-------------------------- Public Functions --------------------------*/
+
 	Renderer& Renderer::Instance()
 	{
 		static Renderer instance;
@@ -48,8 +50,11 @@ namespace Ares2D
 
 	void Renderer::Draw(bool show_info)
 	{
+		Update(show_info);
 		Instance().i_Draw(show_info);
 	}
+
+	/*-------------------------- Internal Functions --------------------------*/
 
 	void Renderer::i_Init(unsigned int batchSize)
 	{
@@ -66,7 +71,7 @@ namespace Ares2D
 		glEnd();
 	}
 
-	void Renderer::i_AddRenderable(Renderable renderable, const char* id)
+	void Renderer::i_AddRenderable(Renderable& renderable, const char* id)
 	{
 		m_Batches.back()->AddRenderable(renderable, id);
 	}
@@ -111,7 +116,6 @@ namespace Ares2D
 
 	void Renderer::i_Draw(bool show_info)
 	{
-		i_Update(show_info);
 		for (int i = 0; i < m_Batches.size(); i++)
 		{
 			m_Batches[i]->Draw();
@@ -122,6 +126,8 @@ namespace Ares2D
 	{
 		m_Batches.push_back(new Batch(batchSize));
 	}
+
+	/*-------------------------- Child Functions --------------------------*/
 
 	Renderer::Batch::Batch(unsigned int batchSize)
 	{
@@ -158,8 +164,6 @@ namespace Ares2D
 
 		m_vertices.insert(m_vertices.end(), renderable.m_vertices.begin(), renderable.m_vertices.end());
 		m_indices.insert(m_indices.end(), renderable.m_indices.begin(), renderable.m_indices.end());
-
-		//m_Geometries.push_back(Renderable);
 	}
 
 	void Renderer::Batch::Clear()
@@ -176,7 +180,6 @@ namespace Ares2D
 
 	void Renderer::Batch::Draw()
 	{
-		//Update();
 		m_vao.Bind();
 
 		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);

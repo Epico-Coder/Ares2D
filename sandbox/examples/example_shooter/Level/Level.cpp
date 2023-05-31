@@ -1,28 +1,28 @@
 #include "Level.h"
 
-Level::Level(ResourceHandler* resource, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path)
-    : m_resource(resource), m_level_no(levelNumber), m_level_path(level_path)
+Level::Level(int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path)
+    : m_level_no(levelNumber), m_level_path(level_path)
 {
-    m_resource->AddResource(std::to_string(m_level_no), 1200, 600);
-    m_resource->AddShader(std::to_string(m_level_no), 1);
+   Ares2D::Resource::AddResource(std::to_string(m_level_no), 1200, 600);
+   Ares2D::Resource::AddShader(std::to_string(m_level_no), 1);
 
-    TextureUse t_bg = m_resource->AddTexture(std::to_string(m_level_no), bg_path);
+    TextureUse t_bg = Ares2D::Resource::AddTexture(std::to_string(m_level_no), bg_path);
     m_bg = Rect(Position{ 0, 0, WIDTH, HEIGHT }, ARES_NO_COLOR, t_bg);
 
-    m_player = new Player(*m_resource, levelNumber, player_path, [this](int x, int y, int w, int h) {return Collision(x, y, w, h);});
+    m_player = new Player(levelNumber, player_path, [this](int x, int y, int w, int h) {return Collision(x, y, w, h);});
 
-    m_resource->BindResource(std::to_string(m_level_no), 1);
+    Ares2D::Resource::BindResource(std::to_string(m_level_no), 1);
 
     // Sets uniforms only once since 2D view doesnt change
     glm::mat4 projectionMatrix = glm::ortho(0.0f, float(WIDTH), 0.0f, float(HEIGHT), -1.0f, 1.0f);
-    m_resource->SetUniformMat4f(std::to_string(m_level_no), 1, "u_MVP", projectionMatrix);
+    Ares2D::Resource::SetUniformMat4f(std::to_string(m_level_no), 1, "u_MVP", projectionMatrix);
 
     m_level_matrix = ReadTextFile(m_level_path);
 }
 
 void Level::AddMaterial(int matNumber, const std::string& mat_path)
 {
-    TextureUse t_material = m_resource->AddTexture(std::to_string(m_level_no), mat_path);
+    TextureUse t_material = Ares2D::Resource::AddTexture(std::to_string(m_level_no), mat_path);
     Rect r_material(Position{ 0, 0, SIZEX, SIZEY }, ARES_NO_COLOR, t_material);
 
     m_level_map[matNumber] = r_material;
@@ -35,7 +35,7 @@ void Level::AddEnemy(Enemy& enemy)
 
 void Level::Update(float deltaTime, glm::vec2 mouse_pos)
 {
-    m_resource->BindResource(std::to_string(m_level_no), 1);
+    Ares2D::Resource::BindResource(std::to_string(m_level_no), 1);
 
     // Move background
     if (m_bgX < -WIDTH)
@@ -79,7 +79,7 @@ void Level::Update(float deltaTime, glm::vec2 mouse_pos)
 
     if (Ares2D::Input::getIsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
     {
-        m_player->Shoot(*m_resource);
+        m_player->Shoot();
     }
 
     // Respond to collisions
@@ -137,7 +137,7 @@ void Level::DrawMap()
 
 void Level::Draw()
 {
-    m_resource->BindResource(std::to_string(m_level_no), 1);
+    Ares2D::Resource::BindResource(std::to_string(m_level_no), 1);
 
     // Moving Bg
     m_bg.SetPos(m_bgX, 0);

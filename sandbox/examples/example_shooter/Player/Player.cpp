@@ -1,9 +1,9 @@
 #include "Player.h"
 
-Player::Player(ResourceHandler& resource, int levelNumber, const std::string& player_path, std::function<std::optional<Position>(int, int, int, int)> collision_func)
+Player::Player(int levelNumber, const std::string& player_path, std::function<std::optional<Position>(int, int, int, int)> collision_func)
     : m_level_number(levelNumber), m_collision_func(collision_func)
 {
-    TextureUse t_plr = resource.AddTexture(std::to_string(m_level_number), player_path);
+    TextureUse t_plr = Ares2D::Resource::AddTexture(std::to_string(m_level_number), player_path);
     m_rect = new Rect(Position{ position.x, position.y, size.x, size.y }, ARES_NO_COLOR, t_plr);
 }
 
@@ -178,7 +178,7 @@ void Player::DashRight()
     */
 }
 
-void Player::Shoot(ResourceHandler& resource)
+void Player::Shoot()
 {
-    m_bullets.push_back(new Bullet(resource, m_level_number, position, m_angle));
+    m_bullets.push_back(new Bullet(m_level_number, position, m_angle));
 }

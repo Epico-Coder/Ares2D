@@ -25,7 +25,7 @@ const int SIZEY = HEIGHT / COLS;
 class Level {
     friend class Player;
 public:
-    Level(ResourceHandler* resource, int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path);
+    Level(int levelNumber, const std::string& level_path, const std::string& bg_path, const std::string& player_path);
 
     void AddMaterial(int matNumber, const std::string& mat_path);
     void AddEnemy(Enemy& enemy);
@@ -88,8 +88,6 @@ private:
         }
     }
 private:
-    ResourceHandler* m_resource;
-
     int m_level_no;
     std::vector<std::vector<int>> m_level_matrix;
     std::unordered_map<int, Rect> m_level_map;
