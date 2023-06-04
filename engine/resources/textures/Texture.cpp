@@ -232,7 +232,7 @@ void TextureHandler::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_BGRA, m_atlas_width, m_atlas_height, 500, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_BGRA, m_atlas_width, m_atlas_height, 10, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 

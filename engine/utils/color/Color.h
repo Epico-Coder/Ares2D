@@ -1,10 +1,27 @@
 #pragma once
 
-struct Color
+namespace Ares2D
 {
-	float r;
-	float g;
-	float b;
-	float a;
+	struct Color4
+	{
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+
+	struct Color3
+	{
+		float r;
+		float g;
+		float b;
+	};
+
+	class Color
+	{
+	public:
+	private:
+	};
+
 };
 

@@ -43,7 +43,7 @@ namespace Ares2D
         return Instance().i_WindowOpen();
     }
 
-    void Window::Clear(Color color)
+    void Window::Clear(Ares2D::Color4 color)
     {
         Instance().i_Clear(color);
     }
@@ -198,7 +198,7 @@ namespace Ares2D
         return !glfwWindowShouldClose(m_Window);
     }
 
-    void Window::i_Clear(Color color)
+    void Window::i_Clear(Ares2D::Color4 color)
     {
         glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

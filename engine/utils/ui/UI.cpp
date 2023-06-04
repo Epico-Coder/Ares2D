@@ -29,7 +29,7 @@ namespace Ares2D
         return Instance().i_GetResourceID();
     }
 
-    void UI::RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale, float ln_width, float ln_height)
+    void UI::RenderText(Font& font, const std::string& text, float x, float y, Ares2D::Color4 text_color, float scale, float ln_width, float ln_height)
     {
         Instance().i_RenderText(font, text, x, y, text_color, scale, ln_width, ln_height);
     }
@@ -43,7 +43,7 @@ namespace Ares2D
 
     void UI::i_Init()
     {
-        Ares2D::Resource::AddResource(resource_name, 600, 600);
+        Ares2D::Resource::AddResource(resource_name, 1000, 1000);
         Ares2D::Resource::AddShader(resource_name, 1, "engine/utils/ui/shaders/vert_ui.shader", "engine/utils/ui/shaders/frag_ui.shader");
         Ares2D::Resource::BindResource(resource_name, 1);
         Ares2D::Resource::SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
@@ -54,7 +54,7 @@ namespace Ares2D
         return resource_name;
     }
 
-    void UI::i_RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale, float ln_width, float ln_height)
+    void UI::i_RenderText(Font& font, const std::string& text, float x, float y, Ares2D::Color4 text_color, float scale, float ln_width, float ln_height)
     {
         Ares2D::Resource::BindResource(resource_name, 1);
         Ares2D::Resource::SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
@@ -80,7 +80,7 @@ namespace Ares2D
             float h = ch.Size.y * scale;
 
             // Render glyph texture over quad
-            Rect rect(Position{ xpos,ypos,w,h }, text_color, ch.texture_use);
+            Rect rect(Ares2D::Float4{ xpos,ypos,w,h }, text_color, ch.texture_use);
             Ares2D::Renderer::AddRenderable(rect);
 
             // Move to the next character position
@@ -165,9 +165,9 @@ namespace Ares2D
 
     /*-------------------------- Child 2 Functions --------------------------*/
 
-    UI::Button::Button(Font& font, const std::string& text, const Position& position, const Color& text_color, const Color& button_color, std::function<void()> on_hover, std::function<void()> on_click)
+    UI::Button::Button(Font& font, const std::string& text, const Ares2D::Float4& position, const Ares2D::Color4& text_color, const Ares2D::Color4& button_color, std::function<void()> on_hover, std::function<void()> on_click)
         : font(font), text(text), position(position), text_color(text_color), button_color(button_color),
-        on_hover(on_hover), on_click(on_click), m_rect(Rect(position, button_color, 0))
+        on_hover(on_hover), on_click(on_click), m_rect(Rect(position, button_color))
     {
     }
 

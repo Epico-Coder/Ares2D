@@ -51,16 +51,18 @@ namespace Ares2D
         {
             friend class UI;
         public:
-            Button(Font& font, const std::string& text, const Position& position, const Color& text_color, const Color& button_color,
+            Button(Font& font, const std::string& text, const Ares2D::Float4& position, const Ares2D::Color4& text_color, const Ares2D::Color4& button_color,
                 std::function<void()> on_hover = default_button_event, std::function<void()> on_click = default_button_event);
         protected:
             Rect m_rect;
         private:
             Font& font;
             std::string text;
-            Position position;
-            Color text_color;
-            Color button_color;
+            Ares2D::Float4 position;
+
+            Ares2D::Color4 text_color;
+            Ares2D::Color4 button_color;
+
             std::function<void()> on_hover;
             std::function<void()> on_click;
 
@@ -77,7 +79,7 @@ namespace Ares2D
 
         static std::string GetResourceID();
 
-        static void RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale = 1.0f, float ln_width = 1, float ln_height = 1);
+        static void RenderText(Font& font, const std::string& text, float x, float y, Ares2D::Color4 text_color, float scale = 1.0f, float ln_width = 1, float ln_height = 1);
         static void RenderButton(Button& button);
     private:
         UI();
@@ -87,7 +89,7 @@ namespace Ares2D
 
         std::string i_GetResourceID();
 
-        void i_RenderText(Font& font, const std::string& text, float x, float y, Color text_color, float scale = 1.0f, float ln_width = 1, float ln_height = 1);
+        void i_RenderText(Font& font, const std::string& text, float x, float y, Ares2D::Color4 text_color, float scale = 1.0f, float ln_width = 1, float ln_height = 1);
         void i_RenderButton(Button& button);
     private:
         Shader m_shader;

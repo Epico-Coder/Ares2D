@@ -47,8 +47,11 @@ namespace Ares2D
 
     void VFX::i_AddVFX(const std::string& id)
     {
-        VFX_ELEMENT* vfx = new VFX_ELEMENT(m_screen_width, m_screen_height);
-        m_VFXs[id] = vfx;
+        if (!m_VFXs.contains(id))
+        {
+            VFX_ELEMENT* vfx = new VFX_ELEMENT(m_screen_width, m_screen_height);
+            m_VFXs[id] = vfx;
+        }
     }
 
     void VFX::i_Start()

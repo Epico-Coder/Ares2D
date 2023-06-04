@@ -38,7 +38,7 @@ namespace Ares2D
 
 		static bool WindowOpen();
 
-		static void Clear(Color color);
+		static void Clear(Ares2D::Color4 color);
 
 		static void SwapBuffers();
 		static void PollEvents();
@@ -66,7 +66,7 @@ namespace Ares2D
 
 		bool i_WindowOpen();
 
-		void i_Clear(Color color);
+		void i_Clear(Ares2D::Color4 color);
 
 		void i_SwapBuffers();
 		void i_PollEvents();

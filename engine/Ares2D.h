@@ -1,39 +1,16 @@
 #pragma once
 
-#include "dependancies/glew/include/GL/glew.h"
-#include "dependancies/glfw/include/GLFW/glfw3.h"
-#include "dependancies/glm/glm.hpp"
-#include "dependancies/glm/gtc/matrix_transform.hpp"
-
 #include "engine/rendering/Window.h"
 #include "engine/rendering/Renderer.h"
+
 #include "engine/resources/audio/Audio.h"
-
-#include "engine/rendering/storage/VertexBuffer.h"
-#include "engine/rendering/storage/VertexBufferLayout.h"
-#include "engine/rendering/storage/VertexArray.h"
-#include "engine/rendering/storage/IndexBuffer.h"
-#include "engine/rendering/storage/FrameBuffer.h"
-#include "engine/rendering/storage/RenderBuffer.h"
-
-#include "engine/rendering/geometry/Triangle.h"
-#include "engine/rendering/geometry/Rect.h"
-#include "engine/rendering/geometry/Circle.h"
-#include "engine/rendering/geometry/Polygon.h"
-
-#include "engine/resources/shaders/Shader.h"
-#include "engine/resources/textures/Texture.h"
-
-#include "engine/resources/resource/Resource.h"
-
-#include "engine/utils/input/Input.h"
-#include "engine/utils/ui/UI.h"
-#include "engine/utils/math/Math.h"
-#include "engine/utils/color/Color.h"
-
 #include "engine/resources/vfx/VFX.h"
 
-#include <Windows.h>
+#include "engine/utils/ui/UI.h"
+
+#include "engine/rendering/geometry/Rect.h"
+#include "engine/rendering/geometry/Triangle.h"
+
 #include <iostream>
 
 #define ARES_TRUE 1
@@ -42,7 +19,7 @@
 
 #define ARES_KEY_LEFT GLFW_KEY_LEFT
 
-#define ARES_NO_COLOR Color{0.0f, 0.0f, 0.0f, 0.0f}
+#define ARES_NO_COLOR Ares2D::Color4{0.0f, 0.0f, 0.0f, 0.0f}
 
 
 namespace Ares2D
