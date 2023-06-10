@@ -348,6 +348,10 @@ namespace Ares2D
     {
     }
 
+    Float2::Float2(float arr[2]) : x(arr[0]), y(arr[1])
+    {
+    }
+
     Float2::Float2(float x, float y) : x(x), y(y)
     {
     }

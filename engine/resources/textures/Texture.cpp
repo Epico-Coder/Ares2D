@@ -128,7 +128,7 @@ TextureUse TextureAtlas::AddTexture(GLenum sformat, GLenum dformat, int width, i
 	outTextureCords[2].first = (m_xoffset) / m_width; outTextureCords[2].second = 1.0f - ((m_yoffset) / m_height);
 	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1.0f - ((m_yoffset) / m_height);
 
-	return TextureUse{ outTextureCords, m_ID, th_name };
+	return TextureUse{ outTextureCords, static_cast<float>(m_ID), th_name };
 }
 
 bool TextureAtlas::PreAddTexture(const std::string& filepath, float scale)
@@ -186,7 +186,7 @@ TextureUse TextureAtlas::AddTexture(const std::string& filepath, const std::stri
 	outTextureCords[2].first = (m_xoffset        ) / m_width; outTextureCords[2].second = 1 - ((m_yoffset		 ) / m_height);
 	outTextureCords[3].first = (m_xoffset - width) / m_width; outTextureCords[3].second = 1 - ((m_yoffset		 ) / m_height);
 
-	return TextureUse{ outTextureCords, m_ID, th_name };
+	return TextureUse{ outTextureCords, static_cast<float>(m_ID), th_name };
 }
 
 void TextureAtlas::Bind()
@@ -263,7 +263,7 @@ TextureUse TextureHandler::AddTexture(const std::string& filepath, float scale)
 	return m_textureAtlases.back()->AddTexture(filepath, m_name, scale);
 }
 
-TextureUse TextureHandler::FullTexture(int textureID)
+TextureUse TextureHandler::FullTexture(float textureID)
 {
 	std::vector<std::pair<float, float>> outTextureCords{ {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f} };
 

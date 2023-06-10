@@ -7,6 +7,16 @@
 
 #include <vector>
 
+enum class GEOMETRY_TYPE
+{
+	POINT,
+	LINE,
+	TRIANGLE,
+	RECT,
+	POLYGON,
+	CIRCLE
+};
+
 class Geometry : public Renderable
 {
 	friend class Renderer;
@@ -16,6 +26,6 @@ public:
 	virtual void Rotate(float angle) {}
 protected:
 private:
-	int m_sides;
+	GEOMETRY_TYPE m_type;
 };
 

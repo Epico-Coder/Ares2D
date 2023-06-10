@@ -57,13 +57,16 @@ namespace Ares2D
     void VFX::i_Start()
     {
         // Binds the first fbo to begin with
-        auto currentIter = m_VFXs.begin();
-        currentIter->second->Start();
-
-        while (currentIter != m_VFXs.end())
+        if (!m_VFXs.empty())
         {
-            currentIter->second->SetNoEffect();
-            currentIter = std::next(currentIter);
+            auto currentIter = m_VFXs.begin();
+            currentIter->second->Start();
+
+            while (currentIter != m_VFXs.end())
+            {
+                currentIter->second->SetNoEffect();
+                currentIter = std::next(currentIter);
+            }
         }
     }
 
@@ -80,29 +83,32 @@ namespace Ares2D
 
     void VFX::i_End()
     {
-        auto currentIter = m_VFXs.begin();
-
-        /*
-        How it goes:
-
-        Unbinds the current fbo
-        Starts the next fbo
-        Ends/Draws the current fbo (result gets stored in the next fbo)
-        */
-
-        while (currentIter != m_VFXs.end())
+        if (!m_VFXs.empty())
         {
-            currentIter->second->Unbind();
+            auto currentIter = m_VFXs.begin();
 
-            auto nextIter = std::next(currentIter);
-            if (nextIter != m_VFXs.end())
+            /*
+            How it goes:
+
+            Unbinds the current fbo
+            Starts the next fbo
+            Ends/Draws the current fbo (result gets stored in the next fbo)
+            */
+
+            while (currentIter != m_VFXs.end())
             {
-                nextIter->second->Start();
+                currentIter->second->Unbind();
+
+                auto nextIter = std::next(currentIter);
+                if (nextIter != m_VFXs.end())
+                {
+                    nextIter->second->Start();
+                }
+
+                currentIter->second->End();
+
+                currentIter = nextIter;
             }
-
-            currentIter->second->End();
-
-            currentIter = nextIter;
         }
     }
 

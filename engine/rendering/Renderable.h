@@ -5,7 +5,7 @@
 struct Vertex
 {
 	float Position[2];
-	float mColor[4];
+	float Color[4];
 	float TexCords[2];
 	float TexID;
 };
@@ -18,4 +18,6 @@ public:
 
 	std::vector<float> m_vertices;
 	std::vector<unsigned int> m_indices;
+
+	glm::mat4 m_transform;
 };

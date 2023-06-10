@@ -18,6 +18,8 @@
 #include "engine/utils/color/Color.h"
 #include "engine/utils/math/Math.h"
 
+#include "engine/resources/resource/Resource.h"
+
 
 namespace Ares2D
 {

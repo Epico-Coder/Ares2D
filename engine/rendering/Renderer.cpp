@@ -164,6 +164,8 @@ namespace Ares2D
 
 		m_vertices.insert(m_vertices.end(), renderable.m_vertices.begin(), renderable.m_vertices.end());
 		m_indices.insert(m_indices.end(), renderable.m_indices.begin(), renderable.m_indices.end());
+
+		Ares2D::Resource::SetUniformMat4f("scene1", 1, "u_Model", renderable.m_transform);
 	}
 
 	void Renderer::Batch::Clear()
@@ -181,7 +183,7 @@ namespace Ares2D
 	void Renderer::Batch::Draw()
 	{
 		m_vao.Bind();
-
+		
 		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 	}
 };

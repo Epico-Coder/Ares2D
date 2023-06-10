@@ -40,7 +40,7 @@ private:
 struct TextureUse
 {
     std::vector<std::pair<float, float>> m_tex_cords;
-    int m_texture_id;
+    float m_texture_id;
     std::string th_name;
 };
 
@@ -79,7 +79,7 @@ public:
     TextureUse AddTexture(GLenum sformat, GLenum dformat, int width, int height, unsigned char* data);
     TextureUse AddTexture(const std::string& filepath, float scale=1.0f);
 
-    TextureUse FullTexture(int textureID);
+    TextureUse FullTexture(float textureID);
 
     //void RemoveTexture(int texID);
 

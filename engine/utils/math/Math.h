@@ -128,6 +128,7 @@ namespace Ares2D
 	{
 	public:
 		Float2();
+		Float2(float arr[2]);
 		Float2(float x, float y);
 		Float2(const Float2& other);
 
