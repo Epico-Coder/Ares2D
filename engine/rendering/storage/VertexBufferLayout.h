@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dependancies/glew/include/GL/glew.h"
+#include "dependancies/glm/glm.hpp"
 #include <vector>
 
 struct VertexBufferElement
@@ -27,6 +28,9 @@ public:
 
 	template<>
 	void Push<GLubyte>(unsigned int count);
+
+	template<>
+	void Push<glm::vec4>(unsigned int count);
 
 	const std::vector<VertexBufferElement> GetElements() const&;
 

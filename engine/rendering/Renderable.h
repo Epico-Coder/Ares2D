@@ -13,11 +13,11 @@ struct Vertex
 class Renderable
 {
 public:
-	const static int vertex_num = 9;
-	const static int vertex_size = sizeof(Vertex);
-
-	std::vector<float> m_vertices;
+	std::vector<Vertex> m_vertices;
 	std::vector<unsigned int> m_indices;
 
-	glm::mat4 m_transform;
+	glm::mat4 m_transform = glm::mat4(1.0);
+
+	virtual void SetVertices() {}
+	virtual void SetTransform() {}
 };

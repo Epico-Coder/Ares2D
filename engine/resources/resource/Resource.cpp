@@ -187,6 +187,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform1i(shaderID, name, v1);
 		}
 		else
@@ -200,6 +201,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform1iv(shaderID, name, count, v1);
 		}
 		else
@@ -213,6 +215,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform1f(shaderID, name, v1);
 		}
 		else
@@ -226,6 +229,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform2fv(shaderID, name, vec);
 		}
 		else
@@ -239,6 +243,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform3f(shaderID, name, v1, v2, v3);
 		}
 		else
@@ -252,6 +257,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform4i(shaderID, name, v1, v2, v3, v4);
 		}
 		else
@@ -265,6 +271,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform4f(shaderID, name, v1, v2, v3, v4);
 		}
 		else
@@ -278,6 +285,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniform4fv(shaderID, name, vec);
 		}
 		else
@@ -291,6 +299,7 @@ namespace Ares2D
 		auto it = m_resources.find(resourceID);
 		if (it != m_resources.end())
 		{
+			it->second->BindShader(shaderID);
 			it->second->SetUniformMat4f(shaderID, name, matrix);
 		}
 		else

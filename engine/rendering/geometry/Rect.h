@@ -9,7 +9,6 @@ namespace Ares2D
 	class Rect : public Geometry
 	{
 		friend class Renderer;
-
 	public:
 		Rect();
 
@@ -41,22 +40,23 @@ namespace Ares2D
 		void SetAngle(float angle);
 		void Rotate(float angle);
 	private:
-		void SetVertices();
+		void SetVertices() override;
+		void SetTransform() override;
 	private:
 		GEOMETRY_TYPE m_type = GEOMETRY_TYPE::RECT;
 		
-		// constructor
-		std::vector<Vertex> m_vertex_arr;
-
-		Ares2D::Float2 m_position;
-		Ares2D::Float2 m_size;
-		Ares2D::Color4 m_color[4];
-		Ares2D::Float2 m_tex_cords[4];
-		float m_tex_id;
-
 		// default values
 		Ares2D::Float2 m_translation{ 0.0f, 0.0f };
 		Ares2D::Float2 m_scale{ 1.0f, 1.0f };
 		float m_angle = 0.0f;
+
+		const static int m_sides = 4;
+
+		// constructor
+		Ares2D::Float2 m_position;
+		Ares2D::Float2 m_size;
+		Ares2D::Color4 m_color[m_sides];
+		Ares2D::Float2 m_tex_cords[m_sides];
+		float m_tex_id;
 	};
 };

@@ -4,6 +4,7 @@ layout(location = 0) in vec2 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCords;
 layout(location = 3) in float a_TexArrayID;
+layout(location = 4) in float a_inst;
 
 uniform mat4 u_MVP;
 

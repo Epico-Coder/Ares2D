@@ -2,8 +2,6 @@
 
 #include "dependancies/glew/include/GL/glew.h"
 
-#include "engine/rendering/Renderer.h"
-
 #include "engine/resources/shaders/Shader.h"
 #include "engine/resources/textures/Texture.h"
 

@@ -34,13 +34,20 @@ void VertexBufferLayout::Push<GLuint>(unsigned int count)
 	VertexBufferElement vbe{ GL_UNSIGNED_INT, count, sizeof(GLuint), GL_FALSE };
 	m_elements.push_back(vbe);
 	m_stride += count * vbe.typeSize;
-
 }
 
 template<>
 void VertexBufferLayout::Push<GLubyte>(unsigned int count)
 {
 	VertexBufferElement vbe{ GL_UNSIGNED_BYTE, count, sizeof(GLubyte), GL_TRUE };
+	m_elements.push_back(vbe);
+	m_stride += count * vbe.typeSize;
+}
+
+template<>
+void VertexBufferLayout::Push<glm::vec4>(unsigned int count)
+{
+	VertexBufferElement vbe{ GL_UNSIGNED_BYTE, count, sizeof(glm::vec4), GL_FALSE };
 	m_elements.push_back(vbe);
 	m_stride += count * vbe.typeSize;
 }

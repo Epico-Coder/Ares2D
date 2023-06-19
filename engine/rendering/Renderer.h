@@ -10,6 +10,7 @@
 #include "engine/rendering/storage/VertexBufferLayout.h"
 #include "engine/rendering/storage/VertexArray.h"
 #include "engine/rendering/storage/IndexBuffer.h"
+#include "engine/rendering/storage/ShaderStorageBuffer.h"
 
 #include "engine/rendering/Renderable.h"
 
@@ -35,7 +36,7 @@ namespace Ares2D
 
 		static void DrawTestTriangle(float x, float y, float size);
 
-		static void AddRenderable(Renderable renderable, const char* id = nullptr);
+		static void AddRenderable(Renderable* renderable, const char* id = nullptr);
 
 		static void Clear();
 		static void Update(bool show_info);
@@ -48,7 +49,7 @@ namespace Ares2D
 
 		void i_DrawTestTriangle(float x, float y, float size);
 
-		void i_AddRenderable(Renderable& renderable, const char* id = nullptr);
+		void i_AddRenderable(Renderable* renderable, const char* id = nullptr);
 
 		void i_Clear();
 		void i_Update(bool show_info);
@@ -60,12 +61,12 @@ namespace Ares2D
 			Batch(unsigned int batchSize = 1000);
 			~Batch();
 
-			//int getRenderableCount() { return m_Geometries.size(); }
+			int getRenderableCount() { return m_renderables.size(); }
 			int getVerticesCount() { return m_vertices.size(); }
 			int getIndicesCount() { return m_indices.size(); }
 			int getIndicesMaxCount() { return m_ibo.GetCount(); }
 
-			void AddRenderable(Renderable& renderable, const char* id = nullptr);
+			void AddRenderable(Renderable* renderable, const char* id = nullptr);
 
 			void Clear();
 			void Update();
@@ -76,15 +77,22 @@ namespace Ares2D
 			std::vector<float> m_vertices;
 			std::vector<unsigned int> m_indices;
 
+			std::vector<glm::mat4> m_models;
+
 			VertexBuffer m_vbo;
+			VertexBufferLayout m_vbl;
+
+			ShaderStorageBuffer m_ssbo;
+
 			IndexBuffer m_ibo;
 			VertexArray m_vao;
-			VertexBufferLayout m_vbl;
+
+			std::vector<Renderable*> m_renderables;
 		};
 
 		void AddBatch(unsigned int batchSize);
 	private:
 		std::vector<Batch*> m_Batches;
-		unsigned int m_batchSize;
+		unsigned int m_BatchSize;
 	};
 };

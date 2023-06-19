@@ -46,7 +46,7 @@ namespace Ares2D
         Ares2D::Resource::AddResource(resource_name, 1000, 1000);
         Ares2D::Resource::AddShader(resource_name, 1, "engine/utils/ui/shaders/vert_ui.shader", "engine/utils/ui/shaders/frag_ui.shader");
         Ares2D::Resource::BindResource(resource_name, 1);
-        Ares2D::Resource::SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
+        //Ares2D::Resource::SetUniformMat4f(resource_name, 1, "u_MVP", m_projection);
     }
 
     std::string UI::i_GetResourceID()
@@ -81,7 +81,7 @@ namespace Ares2D
 
             // Render glyph texture over quad
             Rect rect(Ares2D::Float4{ xpos,ypos,w,h }, text_color, ch.texture_use);
-            Ares2D::Renderer::AddRenderable(rect);
+            Ares2D::Renderer::AddRenderable(&rect);
 
             // Move to the next character position
             currentX += ((ch.Advance >> 6) * scale) + ln_width;
@@ -92,7 +92,7 @@ namespace Ares2D
 
     void UI::i_RenderButton(Button& button)
     {
-        Ares2D::Renderer::AddRenderable(button.m_rect);
+        Ares2D::Renderer::AddRenderable(&button.m_rect);
         RenderText(button.font, button.text, button.position.x, button.position.y, button.text_color);
     }
 

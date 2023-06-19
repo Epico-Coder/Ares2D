@@ -40,6 +40,6 @@ namespace Ares2D
         }
        
         Ares2D::Renderer::Init(10000);
-        Ares2D::UI::Init();
+        //Ares2D::UI::Init();
     }
 };

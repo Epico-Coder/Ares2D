@@ -24,7 +24,7 @@ void ShaderHandler::RemoveShader(int shaderID)
 {
     auto iter =  m_Shaders.find(shaderID);
     if (iter == m_Shaders.end()) {
-        std::cout << "Audio with ID " << shaderID << " does not exist" << std::endl;
+        std::cout << "Shader with ID " << shaderID << " does not exist" << std::endl;
     }
     else
     {
@@ -36,7 +36,7 @@ void ShaderHandler::BindShader(int shaderID)
 {
     auto iter = m_Shaders.find(shaderID);
     if (iter == m_Shaders.end()) {
-        std::cout << "Audio with ID " << shaderID << " does not exist" << std::endl;
+        std::cout << "Shader with ID " << shaderID << " does not exist" << std::endl;
     }
     else
     {
